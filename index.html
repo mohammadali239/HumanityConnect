@@ -309,8 +309,53 @@ return(<Sec id="faq" title="Public FAQ & Live Audit">{q.map(([a,b],i)=><div key=
 function Team(){const{adminOK}=useT();const[team,setTeam]=useState([{id:1,name:'Md. Rafiq Islam',role:'Founder & Chairperson'},{id:2,name:'Ayesha Siddika',role:'Programs Lead'},{id:3,name:'Kamal Hossain',role:'Finance & Transparency'},{id:4,name:'Mitu Rahman',role:'Volunteer Coordinator'}]);const[f,setF]=useState({name:'',role:'',photo:null});
 return(<Sec id="team" title="Our Team Members" sub="The people behind Humanity Connect. Names and roles shown here are samples."><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{team.map(m=><div key={m.id} className="card text-center">{m.photo?<img src={m.photo} className="w-24 h-24 rounded-full object-cover mx-auto" alt={m.name}/>:<div className="w-24 h-24 rounded-full bp text-white text-3xl font-bold flex items-center justify-center mx-auto">{m.name[0]}</div>}<b className="block mt-2 text-sm">{m.name}</b><span className="text-xs text-slate-500">{m.role}</span></div>)}</div>
 {adminOK&&<div className="card mt-4 max-w-md"><b>Add team member (admin)</b><Fld l="Name"><input className="inp" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld><Fld l="Role"><input className="inp" value={f.role} onChange={e=>setF({...f,role:e.target.value})}/></Fld><PhotoPick key={team.length} label="Photo" onPick={p=>setF({...f,photo:p})}/><button className="btn bp" disabled={!f.name} onClick={()=>{setTeam([...team,{id:Date.now(),...f}]);setF({name:'',role:'',photo:null})}}>Add to team</button></div>}</Sec>)}
-function Contact(){const[f,setF]=useState({name:'',email:'',msg:''});const mail='humanityconnect12@gmail.com';
-return(<Sec id="contact" title="Contact Us" sub="Questions, partnerships or need help? Reach us any of these ways."><div className="grid md:grid-cols-2 gap-4"><div className="card space-y-3 text-sm"><a className="block font-semibold tp" href={'mailto:'+mail}>✉ {mail}</a><a className="block font-semibold tp" href="tel:01977853550">📞 01977853550</a><a className="block font-semibold tp" href="https://wa.me/8801977853550" target="_blank" rel="noreferrer">💬 Chat on WhatsApp</a><p className="text-slate-500">Dhaka, Bangladesh</p></div><div className="card"><Fld l="Your name"><input className="inp" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld><Fld l="Your email"><input className="inp" value={f.email} onChange={e=>setF({...f,email:e.target.value})}/></Fld><Fld l="Message"><textarea className="inp" rows="3" value={f.msg} onChange={e=>setF({...f,msg:e.target.value})}/></Fld><button className="btn bp" disabled={!f.name||!f.msg} onClick={()=>{window.location.href='mailto:'+mail+'?subject='+encodeURIComponent('Message from '+f.name)+'&body='+encodeURIComponent(f.msg+'\n\n'+f.name+' ('+f.email+')')}}>Send message</button></div></div></Sec>)}
+function Contact(){
+  const [f, setF] = useState({name:'', email:'', msg:''});
+  const [status, setStatus] = useState('');
+  const mail = 'humanityconnect12@gmail.com';
+
+  const sendMsg = async () => {
+    setStatus('sending');
+    try {
+      const res = await fetch('https://formspree.io/f/mvkarnpd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name: f.name, email: f.email, message: f.msg })
+      });
+      if (res.ok) {
+        setStatus('ok');
+        setF({name:'', email:'', msg:''});
+      } else {
+        setStatus('err');
+      }
+    } catch (e) {
+      setStatus('err');
+    }
+  };
+
+  return (
+    <Sec id="contact" title="Contact Us" sub="Questions, partnerships or need help? Reach us any of these ways.">
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="card space-y-3 text-sm">
+          <a className="block font-semibold tp" href={'mailto:'+mail}>✉ {mail}</a>
+          <a className="block font-semibold tp" href="tel:01977853550">📞 01977853550</a>
+          <a className="block font-semibold tp" href="https://wa.me/8801977853550" target="_blank" rel="noreferrer">💬 Chat on WhatsApp</a>
+          <p className="text-slate-500">Dhaka, Bangladesh</p>
+        </div>
+        <div className="card">
+          <Fld l="Your name"><input className="inp" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld>
+          <Fld l="Your email"><input className="inp" type="email" value={f.email} onChange={e=>setF({...f,email:e.target.value})}/></Fld>
+          <Fld l="Message"><textarea className="inp" rows="3" value={f.msg} onChange={e=>setF({...f,msg:e.target.value})}/></Fld>
+          <button className="btn bp" disabled={!f.name || !f.msg || status==='sending'} onClick={sendMsg}>
+            {status==='sending' ? 'Sending...' : 'Send message'}
+          </button>
+          {status==='ok' && <p className="text-sm text-green-700 font-semibold mt-2">✔ Message sent! Thank you for contacting us.</p>}
+          {status==='err' && <p className="text-sm tb mt-2">Something went wrong. Please try again or use WhatsApp.</p>}
+        </div>
+      </div>
+    </Sec>
+  );
+}
 function Footer(){const{go}=useT();return(<footer id="footer" className="bp text-white mt-10"><div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4 text-sm"><div><b>{THEME.name}</b><p className="opacity-80">Dhaka, Bangladesh<br/><a href="mailto:humanityconnect12@gmail.com">humanityconnect12@gmail.com</a><br/><a href="tel:01977853550">01977853550</a></p></div><div className="space-y-1"><button onClick={()=>go('tools')} className="block text-left">Privacy Policy</button><button onClick={()=>go('tools')} className="block text-left">Terms of Service</button><button onClick={()=>go('tools')} className="block text-left">Safeguarding Guidelines</button></div><div className="opacity-90">Legal status: <b>[Registration number pending]</b><br/>Demo prototype. No real money is collected.</div></div></footer>)}
 
 /* ========= Donation modal ========= */
