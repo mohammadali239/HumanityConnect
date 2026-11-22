@@ -83,8 +83,8 @@ const[team,setTeam]=useState([{id:1,name:'Mohammad Ali',role:'Founder & CEO',pho
 const[zakatPool,setZakatPool]=useState(5000);
 const[me,setMe]=useState({name:'Demo Donor',cat:'Donor Member',photo:null,hide:false,monthly:[500,500,1000,500,500,1000]});
 const log=(what)=>setAudit(a=>[{who:'Admin (demo)',what,at:now()},...a]);
-const raised=500000+donations.filter(d=>d.ok&&d.fund==='General'&&Number(d.id.slice(2))>1003).reduce((s,d)=>s+d.amt,0);
-const spent=200000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+e.amt,0);
+const raised=50000+donations.filter(d=>d.ok&&d.fund==='General'&&Number(d.id.slice(2))>1003).reduce((s,d)=>s+d.amt,0);
+const spent=20000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+e.amt,0);
 const ctx={go,page,camp,setCamp,dcamp,setDcamp,dpre,setDpre,lang,t,donations,setDonations,members,setMembers,expenses,setExpenses,camps,setCamps,proofs,setProofs,fb,setFb,audit,log,zakatPool,setZakatPool,me,setMe,setModal,cats,raised,spent,adminOK,setAdminOK,team,setTeam};
 useEffect(()=>{Object.entries(THEME.colors).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));document.body.className=lang==='bn'?'bn':''},[lang]);
 const nav=[['home','home'],['camp','campaigns'],['edu','education'],['trans','transparency'],['proof','proof-gallery'],['comm','community'],['tools','tools'],['dash','dashboard']];
