@@ -27,6 +27,13 @@ const {useState,useEffect,useRef,createContext,useContext}=React;
 /* ========= THEME & TEXT CONFIG: edit here ========= */
 const THEME={name:'Humanity Connect',colors:{'--primary':'#1E40AF','--cta':'#EA580C','--bg':'#F8FAFC','--edu':'#2563EB','--blood':'#DC2626','--zakat':'#7C3AED'}};
 const GFORM_URL="https://docs.google.com/forms/d/e/1FAIpQLSfQ0iEyvBp_RHAfp81YZTv1f27I3DOHxkpuyBlPNWcpvHs1lQ/viewform?usp=header";
+const MY_ACCOUNTS = {
+  'bKash': '01324205584 (Personal - Send Money)',
+  'Nagad': '01324205584 (Personal - Send Money)',
+  'Rocket': '01324205584-0 (Personal - Send Money)',
+  'Upay': 'pending (Personal)',
+  'Local Bank / Card': 'Dutch Bangla Bank | A/C: 2061510357774 | Name: MD. Atabur Rahman Lanju'
+};
 const L={
 en:{tag:'Together We Can Make a Difference',home:'Home',about:'About',camp:'Campaigns',edu:'Education Support',trans:'Transparency Reports',comm:'Community & Blood Bank',proof:'Proof Gallery',tools:'Zakat & Tools',dash:'Dashboards',more:'View Full Details',back:'Back to Home',contact:'Contact',join:'Login / Join',
 hero:'Connecting compassionate donors, dedicated volunteers, and bright students on one transparent platform. Every taka accounted for, every life empowered.',donate:'Donate Now',vol:'Become a Volunteer',
@@ -363,8 +370,8 @@ function Footer(){const{go}=useT();return(<footer id="footer" className="bp text
 
 /* ========= Donation modal ========= */
 function DonateModal(){const{setModal,donations,setDonations,setZakatPool,zakatPool,camps,dcamp,setDcamp,dpre,setDpre}=useT();
-const[f,setF]=useState({amt:dpre.amt||1000,type:'One-time',method:'bKash',anon:false,name:'',phone:'',fund:dpre.fund||'General',note:dpre.note||'',gift:false,to:'',occ:'Eid',msg:'',camp:dcamp});useEffect(()=>()=>{setDcamp('');setDpre({})},[]);const[done,setDone]=useState(null);const s=k=>v=>setF({...f,[k]:v});
-const submit=()=>{const d={id:'D-'+(1004+donations.length),name:f.name||'Anonymous',amt:+f.amt,anon:f.anon,fund:f.fund,ok:false,t:'just now',method:f.method,type:f.type,phone:f.phone,camp:+f.camp||0,note:f.note,gift:f.gift?f:null};setDonations([d,...donations]);if(f.fund==='Zakat')setZakatPool(zakatPool+d.amt);setDone(d)};
+const[f,setF]=useState({amt:dpre.amt||1000,type:'One-time',method:'bKash',trx:'',purpose:'',comment:'',anon:false,name:'',phone:'',fund:dpre.fund||'General',note:dpre.note||'',gift:false,to:'',occ:'Eid',msg:'',camp:dcamp});useEffect(()=>()=>{setDcamp('');setDpre({})},[]);const[done,setDone]=useState(null);const s=k=>v=>setF({...f,[k]:v});
+const submit=()=>{const d={id:'D-'+(1004+donations.length),name:f.name||'Anonymous',amt:+f.amt,anon:f.anon,fund:f.fund,ok:false,t:'just now',method:f.method,trx:f.trx,purpose:f.purpose,comment:f.comment,type:f.type,phone:f.phone,camp:+f.camp||0,note:f.note,gift:f.gift?f:null};setDonations([d,...donations]);if(f.fund==='Zakat')setZakatPool(zakatPool+d.amt);setDone(d)};
 if(done)return(<Modal onClose={()=>setModal(null)} title="Demo donation received"><div id="print"><div className="border-2 rounded p-4 text-sm space-y-1" style={{borderColor:'var(--primary)'}}><b className="tp text-lg">Digital Donation Receipt (DEMO)</b><p>Receipt no: {done.id}</p><p>Donor: {done.anon?'Anonymous':done.name}</p><p>Amount: <b>{money(done.amt)}</b> ({done.type})</p><p>Fund: {done.fund} · Method: {done.method}</p>{done.note&&<p>For: {done.note}</p>}<p>Date: {now()}</p><p className="text-xs text-slate-500">Sample receipt. No real payment was taken.</p></div>
 {done.gift&&<div className="mt-3 rounded-xl p-5 text-center text-white" style={{background:'linear-gradient(135deg,var(--primary),var(--zakat))'}}><p className="text-xs opacity-80">{THEME.name} · Gift of Giving</p><h4 className="text-xl font-extrabold my-1">{done.gift.occ} Mubarak, {done.gift.to||'Friend'}!</h4><p className="text-sm">{done.name} donated {money(done.amt)} in your name to help families in need.</p>{done.gift.msg&&<p className="italic text-sm mt-2">“{done.gift.msg}”</p>}</div>}</div>
 {done.phone&&<p className="text-xs text-green-700 mt-2 bg-green-50 rounded p-2">📱 WhatsApp/SMS simulation → {done.phone}: “Thank you! Receipt {done.id} for {money(done.amt)}.”</p>}<div className="mt-3 flex gap-2"><Print/><button className="btn bg-slate-500" onClick={()=>setModal(null)}>Close</button></div></Modal>);
@@ -374,6 +381,13 @@ return(<Modal onClose={()=>setModal(null)} title="Donate (Demo mode)"><p classNa
 <Fld l="Custom amount (৳)"><input type="number" min="10" className="inp" value={f.amt} onChange={e=>s('amt')(e.target.value)}/></Fld>
 <Fld l="Fund"><select className="inp" value={f.fund} onChange={e=>s('fund')(e.target.value)}><option>General</option><option>Zakat</option></select></Fld>
 {f.note&&<p className='text-sm bg-blue-50 rounded p-2 mb-2'>💙 {f.note}</p>}<Fld l="Campaign (optional)"><select className="inp" value={f.camp} onChange={e=>s('camp')(e.target.value)}><option value="">General (no specific campaign)</option>{camps.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></Fld><Fld l="Payment method (demo)"><select className="inp" value={f.method} onChange={e=>s('method')(e.target.value)}>{['bKash','Nagad','Rocket','Upay','Local Bank / Card'].map(x=><option key={x}>{x}</option>)}<option disabled>International Card / Gateway: Coming soon, pending legal approval</option></select></Fld>
+<div className="bg-blue-50 border border-blue-200 rounded p-2.5 mb-2 text-xs">
+  <b className="tp block">এই নম্বরে টাকা পাঠান ({f.method}):</b>
+  <span className="font-mono text-sm font-bold">{MY_ACCOUNTS[f.method]}</span>
+</div>
+<Fld l="Transaction ID (TrxID) *"><input className="inp font-mono" placeholder="টাকা পাঠানোর পর TrxID দিন" value={f.trx} onChange={e=>s('trx')(e.target.value)}/></Fld>
+<Fld l="কিসের জন্য দান করতে চান? (Purpose)"><input className="inp" placeholder="যেমন: বন্যার্তদের জন্য / এতিম শিশু / শিক্ষা" value={f.purpose} onChange={e=>s('purpose')(e.target.value)}/></Fld>
+<Fld l="আপনার মন্তব্য (Comment)"><textarea className="inp" rows="2" placeholder="আপনার কোনো কথা বা দোয়া থাকলে লিখুন..." value={f.comment} onChange={e=>s('comment')(e.target.value)}/></Fld>
 <Fld l="Your name"><input className="inp" value={f.name} onChange={e=>s('name')(e.target.value)}/></Fld><Fld l="WhatsApp / phone for receipt (optional)"><input className="inp" value={f.phone} onChange={e=>s('phone')(e.target.value)}/></Fld>
 <label className="text-sm flex gap-2 mb-2"><input type="checkbox" checked={f.anon} onChange={e=>s('anon')(e.target.checked)}/>Anonymous donation</label>
 <label className="text-sm flex gap-2 mb-2"><input type="checkbox" checked={f.gift} onChange={e=>s('gift')(e.target.checked)}/>Gift this donation to someone</label>
