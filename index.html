@@ -350,6 +350,7 @@ function Contact(){
           <a className="block font-semibold tp" href={'mailto:'+mail}>✉ {mail}</a>
           <a className="block font-semibold tp" href="tel:01977853550">📞 01977853550</a>
           <a className="block font-semibold tp" href="https://wa.me/8801977853550" target="_blank" rel="noreferrer">💬 Chat on WhatsApp</a>
+          <a className="block font-semibold tp" href="https://www.facebook.com/share/19oERSrLHM/?mibextid=wwXIfr" target="_blank" rel="noreferrer">📘 Connect on Facebook</a>
           <p className="text-slate-500">Dhaka, Bangladesh</p>
         </div>
         <div className="card">
@@ -366,7 +367,7 @@ function Contact(){
     </Sec>
   );
 }
-function Footer(){const{go}=useT();return(<footer id="footer" className="bp text-white mt-10"><div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4 text-sm"><div><div className="flex items-center gap-2 mb-1"><img src="Logo.png" alt="Logo" className="w-7 h-7 bg-white rounded-full p-0.5 object-contain"/><b>{THEME.name}</b></div><p className="opacity-80">Dhaka, Bangladesh<br/><a href="mailto:humanityconnect12@gmail.com">humanityconnect12@gmail.com</a><br/><a href="tel:01977853550">01977853550</a></p></div><div className="space-y-1"><button onClick={()=>go('tools')} className="block text-left">Privacy Policy</button><button onClick={()=>go('tools')} className="block text-left">Terms of Service</button><button onClick={()=>go('tools')} className="block text-left">Safeguarding Guidelines</button></div><div className="opacity-90">Legal status: <b>[Registration number pending]</b><br/>Demo prototype. No real money is collected.</div></div></footer>)}
+function Footer(){const{go}=useT();return(<footer id="footer" className="bp text-white mt-10"><div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4 text-sm"><div><b>Humanity Connect</b><p className="text-xs opacity-80 mt-1">Transparent student-led charity connecting verified people in need with donors and volunteers.</p></div><div><b>Quick links</b><button onClick={()=>go('transparency')} className="block text-left">Open Books</button><button onClick={()=>go('campaigns')} className="block text-left">Campaigns</button><button onClick={()=>go('zakat')} className="block text-left">Zakat Fund</button></div><div><b>Trust &amp; Governance</b><button onClick={()=>go('audit')} className="block text-left">Verification Process</button><button onClick={()=>go('tools')} className="block text-left">Safeguarding Guidelines</button><a href="https://www.facebook.com/share/19oERSrLHM/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="block text-left font-semibold underline mt-1">📘 Follow us on Facebook ↗</a></div></div></footer>)}
 
 /* ========= Donation modal ========= */
 function DonateModal(){const{setModal,donations,setDonations,setZakatPool,zakatPool,camps,dcamp,setDcamp,dpre,setDpre}=useT();
