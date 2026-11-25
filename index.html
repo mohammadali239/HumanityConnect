@@ -87,6 +87,7 @@ const raised=50000+donations.filter(d=>d.ok&&d.fund==='General'&&Number(d.id.sli
 const spent=20000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+e.amt,0);
 const ctx={go,page,camp,setCamp,dcamp,setDcamp,dpre,setDpre,lang,t,donations,setDonations,members,setMembers,expenses,setExpenses,camps,setCamps,proofs,setProofs,fb,setFb,audit,log,zakatPool,setZakatPool,me,setMe,setModal,cats,raised,spent,adminOK,setAdminOK,team,setTeam};
 useEffect(()=>{Object.entries(THEME.colors).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));document.body.className=lang==='bn'?'bn':''},[lang]);
+useEffect(()=>{const say=()=>{if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(L[lang].demo);u.lang=lang==='bn'?'bn-BD':'en-US';u.rate=0.95;speechSynthesis.speak(u)}};say();const t=setTimeout(say,600);window.addEventListener('click',say,{once:true});return()=>{clearTimeout(t);window.removeEventListener('click',say)}},[lang]);
 const nav=[['home','home'],['camp','campaigns'],['edu','education'],['trans','transparency'],['proof','proof-gallery'],['comm','community'],['tools','tools'],['dash','dashboard']];
 return(<Ctx.Provider value={ctx}>
 <div className="bg-emerald-700 text-base py-2 font-bold text-white overflow-hidden"><div className="tick">{t('demo')}</div></div><header className="sticky top-0 z-40 bg-white border-b shadow-sm">
