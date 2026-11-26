@@ -421,7 +421,7 @@ return(<Modal onClose={()=>setModal(null)} title="Admin: Add Approved Member"><F
 <button className="btn bp w-full" disabled={!f.name} onClick={go}>Add to Website</button></Modal>)}
 
 /* ========= Donor dashboard ========= */
-function DonorDash(){const{me,setMe,donations,setModal}=useT();const mine=donations.filter(d=>!me.name||d.name.toLowerCase().includes(me.name.toLowerCase()));const[rc,setRc]=useState(null);const mo=['Jun','Jul','Aug','Sep','Oct','Nov'];
+function DonorDash(){const{me,setMe,donations,setModal}=useT();const q=(me.name||'').trim().toLowerCase();const mine=donations.filter(d=>!q||d.name.toLowerCase().includes(q)||d.id.toLowerCase().includes(q));const[rc,setRc]=useState(null);const mo=['Jun','Jul','Aug','Sep','Oct','Nov'];
 return(<div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4"><div className="card"><div className="flex gap-3 items-center mb-3">{me.photo?<img src={me.photo} className="w-16 h-16 rounded-full object-cover" alt=""/>:<div className="w-16 h-16 rounded-full bp text-white flex items-center justify-center font-bold">{(me.name||'HD').slice(0,2).toUpperCase()}</div>}<div><b>{me.name||'Humanity Donor'}</b><p className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 inline-block mt-1">{me.cat}</p></div></div>
 <Fld l="Display name"><input className="inp" placeholder="All Donors (Type name to filter)" value={me.name} onChange={e=>setMe({...me,name:e.target.value})}/></Fld>
 <label className="text-sm flex gap-2"><input type="checkbox" checked={me.hide} onChange={e=>setMe({...me,hide:e.target.checked})}/>Hide my name publicly</label></div>
