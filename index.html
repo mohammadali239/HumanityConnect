@@ -404,17 +404,18 @@ function Mentor() {
   const [f, setF] = useState({ name: '', field: '', email: '' });
   const [ok, setOk] = useState(false);
   const [busy, setBusy] = useState(false);
+  const mentors = members.filter(m => m.role === 'Mentor' && m.approved !== false);
 
   const submitMentor = async () => {
     setBusy(true);
     const item = {
       id: Date.now(),
       name: f.name,
-      role: 'Volunteer',
-      district: f.field || 'Mentor',
+      role: 'Mentor',
+      district: f.field || 'Education Mentor',
       phone: f.email || '-',
       bg: '',
-      cat: 'Mentor (' + (f.field || 'Volunteer') + ')',
+      cat: 'Education Mentor',
       consent: false,
       approved: false,
       ts: Date.now()
@@ -433,20 +434,42 @@ function Mentor() {
       color='var(--edu)'
       sub={bn ? 'সপ্তাহে মাত্র এক ঘণ্টা একজন শিক্ষার্থীকে দিকনির্দেশনা দিন। বিশ্ববিদ্যালয় শিক্ষার্থী ও পেশাজীবীরা স্বাগতম।' : 'Guide a student for one hour a week. University students and professionals are welcome.'}
     >
-      <div className='card max-w-lg'>
-        <Fld l={bn ? 'নাম' : 'Name'}>
-          <input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
-        </Fld>
-        <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}>
-          <input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} />
-        </Fld>
-        <Fld l={bn ? 'ইমেইল / ফোন' : 'Email / Phone'}>
-          <input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
-        </Fld>
-        <button className='btn be' disabled={!f.name || busy} onClick={submitMentor}>
-          {busy ? 'Submitting...' : (bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor')}
-        </button>
-        {ok && <p className='text-sm text-green-700 mt-2'>{bn ? 'ধন্যবাদ! একজন অ্যাডমিন আপনার মেন্টর প্রোফাইলটি অনুমোদন করবেন।' : 'Thank you! An admin will approve your mentor profile.'}</p>}
+      <div className='grid md:grid-cols-2 gap-4'>
+        <div className='card'>
+          <Fld l={bn ? 'নাম' : 'Name'}>
+            <input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
+          </Fld>
+          <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}>
+            <input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} />
+          </Fld>
+          <Fld l={bn ? 'ইমেইল / ফোন' : 'Email / Phone'}>
+            <input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
+          </Fld>
+          <button className='btn be' disabled={!f.name || busy} onClick={submitMentor}>
+            {busy ? 'Submitting...' : (bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor')}
+          </button>
+          {ok && <p className='text-sm text-green-700 mt-2'>{bn ? 'ধন্যবাদ! একজন অ্যাডমিন আপনার মেন্টর প্রোফাইলটি অনুমোদন করবেন।' : 'Thank you! An admin will approve your mentor profile.'}</p>}
+        </div>
+
+        <div className='card bg-blue-50/40'>
+          <b className='te block mb-2'>{bn ? `আমাদের অনুমোদিত মেন্টরবৃন্দ (${mentors.length})` : `Our Verified Mentors (${mentors.length})`}</b>
+          {mentors.length ? (
+            <div className='space-y-2 max-h-72 overflow-y-auto'>
+              {mentors.map(m => (
+                <div key={m.id} className='flex items-center gap-3 bg-white border rounded-xl p-2.5 text-sm'>
+                  <Avatar m={m} />
+                  <div className='flex-1'>
+                    <b>{m.name}</b>
+                    <span className='block text-xs text-slate-600'>🎓 {m.district}</span>
+                  </div>
+                  <span className='bg-blue-100 te text-[11px] font-bold px-2 py-0.5 rounded-full'>Mentor</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className='text-xs text-slate-500'>{bn ? 'এখনো কোনো মেন্টর যুক্ত হয়নি। প্রথম মেন্টর হিসেবে নিবন্ধন করুন!' : 'No approved mentors listed yet. Sign up to become our first mentor!'}</p>
+          )}
+        </div>
       </div>
     </Sec>
   );
