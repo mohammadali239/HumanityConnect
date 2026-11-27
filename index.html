@@ -96,7 +96,7 @@ const[zakatPool,setZakatPool]=useState(5000);
 const[me,setMe]=useState({name:'',cat:'Donor Member',photo:null,hide:false,monthly:[500,500,1000,500,500,1000]});
 const log=(what)=>setAudit(a=>[{who:'Admin',what,at:now()},...a]);
 const raised=50000+donations.filter(d=>d.ok&&d.fund==='General'&&Number(d.id.slice(2))>1003).reduce((s,d)=>s+d.amt,0);
-const spent=20000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+e.amt,0);
+const spent=20000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+Number(e.amt||0),0);
 const ctx={go,page,camp,setCamp,dcamp,setDcamp,dpre,setDpre,lang,t,donations,setDonations,members,setMembers,expenses,setExpenses,camps,setCamps,proofs,setProofs,fb,setFb,audit,log,zakatPool,setZakatPool,me,setMe,setModal,cats,raised,spent,adminOK,setAdminOK,team,setTeam};
 useEffect(()=>{Object.entries(THEME.colors).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));document.body.className=lang==='bn'?'bn':''},[lang]);
 useEffect(()=>{
@@ -185,7 +185,7 @@ function Tip({text}){const[o,setO]=useState(false);return<span className='relati
 function Donut({data}){const tot=data.reduce((s,d)=>s+d[1],0)||1;let acc=0;return(<svg viewBox='0 0 42 42' className='w-44 h-44 mx-auto' role='img' aria-label='Fund split'><circle cx='21' cy='21' r='15.915' fill='none' stroke='#e2e8f0' strokeWidth='6'/>{data.map(([n,v,c])=>{const p=v/tot*100;const el=<circle key={n} cx='21' cy='21' r='15.915' fill='none' stroke={c} strokeWidth='6' strokeDasharray={p+' '+(100-p)} strokeDashoffset={25-acc}/>;acc+=p;return el})}<text x='21' y='21' textAnchor='middle' fontSize='3.6' fontWeight='700' fill='#0f172a'>{money(tot)}</text><text x='21' y='25' textAnchor='middle' fontSize='2.4' fill='#64748b'>allocated</text></svg>)}
 
 function FinReport(){const{cats,expenses,zakatPool,raised,spent}=useT();const[vch,setVch]=useState(null);const[rep,setRep]=useState(false);
-const data=[...cats.filter(c=>c[0]!=='Others'),['Zakat Fund',Math.max(zakatPool,1),'var(--zakat)']];const tot=data.reduce((s,d)=>s+d[1],0);const vend=e=>e.vendor||VEN[e.id]||'Local Vendor';
+const data=[...cats.filter(c=>c[0]!=='Others').map(([n,v,c])=>[n,v+expenses.filter(e=>e.id>3&&e.cat===n).reduce((s,e)=>s+Number(e.amt||0),0),c]),['Zakat Fund',Math.max(zakatPool,1),'var(--zakat)']];const tot=data.reduce((s,d)=>s+d[1],0);const vend=e=>e.vendor||VEN[e.id]||'Local Vendor';
 return(<Sec id='transparency' title='Financial Transparency & Where Your Money Goes' sub='Every taka collected and spent, in one place.'>
 <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mb-4'>{[['Total collected',money(raised)],['Total spent',money(spent)],['Available balance',money(raised-spent)],['Zakat fund (kept separate)',money(zakatPool)]].map(([a,b])=><div key={a} className='card'><div className='text-xs text-slate-500'>{a}</div><div className='text-xl font-extrabold tp'>{b}</div></div>)}</div>
 <div className='grid md:grid-cols-2 gap-4'><div className='card'><b>Fund split</b><Donut data={data}/><div className='flex flex-wrap gap-x-3 gap-y-1 justify-center text-xs mt-2'>{data.map(([n,v,c])=><span key={n}><i className='inline-block w-2.5 h-2.5 rounded-full mr-1' style={{background:c}}/>{n} {Math.round(v/tot*100)}%</span>)}</div></div>
