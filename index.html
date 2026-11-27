@@ -199,7 +199,39 @@ return(<Sec id='transparency' title='Financial Transparency & Where Your Money G
 </Sec>)}
 
 const STU=[{n:'104',cls:'Class 10',d:'Dinajpur',gpa:'5.00',need:'Monthly Tuition & Science Books',amt:1500,got:900},{n:'112',cls:'Class 8',d:'Kurigram',gpa:'4.88',need:'School Fees & Uniform',amt:1000,got:250},{n:'087',cls:'HSC 1st Year',d:'Barishal',gpa:'5.00',need:'Coaching Fees & Reference Books',amt:2000,got:1400}];
-function EduHero(){return(<div className='be text-white'><div className='max-w-6xl mx-auto px-4 py-12'><p className='text-sm opacity-80'>Education Support for Meritorious Students</p><h2 className='text-3xl md:text-4xl font-extrabold max-w-3xl leading-snug mt-1'>A bright mind should never be switched off by an empty wallet.</h2><p className='mt-3 max-w-2xl opacity-90'>Imagine a girl who studies by a kerosene lamp after helping her mother sell vegetables, and still comes first in her district. A small monthly sponsorship keeps her in class. Every card below is a child like her. Names are withheld to protect minors.</p><div className='grid grid-cols-3 gap-3 mt-6 max-w-xl text-center'>{[['48','scholarships awarded'],['120','students given books'],['35','active mentors']].map(([a,b])=><div key={b} className='bg-white/15 rounded-xl py-3'><div className='text-2xl font-extrabold'>{a}</div><div className='text-xs'>{b} (sample)</div></div>)}</div></div></div>)}
+function EduHero() {
+  const { lang } = useT();
+  const bn = lang === 'bn';
+  const stats = bn
+    ? [['৪৮', 'বৃত্তি প্রদান করা হয়েছে'], ['১২০', 'শিক্ষার্থীকে বই দেওয়া হয়েছে'], ['৩৫', 'সক্রিয় মেন্টর']]
+    : [['48', 'scholarships awarded'], ['120', 'students given books'], ['35', 'active mentors']];
+
+  return (
+    <div className='be text-white'>
+      <div className='max-w-6xl mx-auto px-4 py-12'>
+        <p className='text-sm opacity-80'>
+          {bn ? 'মেধাবী শিক্ষার্থীদের জন্য শিক্ষা সহায়তা' : 'Education Support for Meritorious Students'}
+        </p>
+        <h2 className='text-3xl md:text-4xl font-extrabold max-w-3xl leading-snug mt-1'>
+          {bn ? 'অর্থের অভাবে কোনো মেধাবী শিক্ষার্থীর স্বপ্ন যেন নিভে না যায়।' : 'A bright mind should never be switched off by an empty wallet.'}
+        </h2>
+        <p className='mt-3 max-w-2xl opacity-90'>
+          {bn
+            ? 'কল্পনা করুন এমন একটি মেয়ের কথা, যে মাকে সবজি বিক্রিতে সাহায্য করার পর কেরোসিনের কুপির আলোয় পড়াশোনা করেও জেলায় প্রথম হয়। আপনার সামান্য মাসিক সহায়তা তাকে স্কুলে ধরে রাখতে পারে। নিচের প্রতিটি কার্ডই এমন একজন শিক্ষার্থীর। অপ্রাপ্তবয়স্কদের নিরাপত্তার স্বার্থে নাম গোপন রাখা হয়েছে।'
+            : 'Imagine a girl who studies by a kerosene lamp after helping her mother sell vegetables, and still comes first in her district. A small monthly sponsorship keeps her in class. Every card below is a child like her. Names are withheld to protect minors.'}
+        </p>
+        <div className='grid grid-cols-3 gap-3 mt-6 max-w-xl text-center'>
+          {stats.map(([a, b]) => (
+            <div key={b} className='bg-white/15 rounded-xl py-3'>
+              <div className='text-2xl font-extrabold'>{a}</div>
+              <div className='text-xs'>{b} {bn ? '(নমুনা)' : '(sample)'}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 function Students() {
   const { setDpre, setModal, lang } = useT();
   const bn = lang === 'bn';
