@@ -91,6 +91,7 @@ const[camps,setCamps]=useState([{id:1,name:'Winter Clothes for 500 Families',tar
 const[proofs,setProofs]=useState([{id:1,title:'Winter blanket distribution',cost:'৳45,000: blankets ৳38,000, transport ৳7,000',loc:'Rangpur',kind:'photo',src:null},{id:2,title:'Book handover to 40 students',cost:'৳30,000: books ৳26,000, bags ৳4,000',loc:'Dhaka',kind:'video',src:null}]);
 const[bloodDonors,setBloodDonors]=useState([{id:1,name:'Tanvir Ahmed',bg:'O+',district:'Dhaka',address:'Mirpur-10, Dhaka',phone:'01700-000001',lastDonate:'2026-06-15',pin:'1234',photo:null},{id:2,name:'Farhana Akter',bg:'AB+',district:'Dhaka',address:'Uttara, Dhaka',phone:'01600-000004',lastDonate:'2026-10-10',pin:'1234',photo:null}]);
 const[fb,setFb]=useState([{id:1,type:'Suggestion',text:'Please add Sylhet volunteer team.',status:'Under Review'},{id:2,type:'Review',text:'Great transparency on expenses!',status:'Resolved'}]);
+const[scholars,setScholars]=useState([{id:104,n:'104',name:'Student #104',cls:'Class 10',d:'Dinajpur',gpa:'5.00',need:'Monthly Tuition & Science Books',amt:1500,got:900,approved:true},{id:112,n:'112',name:'Student #112',cls:'Class 8',d:'Kurigram',gpa:'4.88',need:'School Fees & Uniform',amt:1000,got:250,approved:true},{id:87,n:'087',name:'Student #087',cls:'HSC 1st Year',d:'Barishal',gpa:'5.00',need:'Coaching Fees & Reference Books',amt:2000,got:1400,approved:true}]);
 const[audit,setAudit]=useState([{who:'System',what:'Platform initialised',at:now()}]);
 const[team,setTeam]=useState([{id:1,name:'Mohammad Ali',role:'Founder & CEO',photo:'Mohammad Ali.jpg',link:'https://mohammadali239.github.io/Mohammad-Ali/'},{id:2,name:'Ayesha Siddika',role:'Programs Lead',photo:null},{id:3,name:'Kamal Hossain',role:'Finance & Transparency',photo:null},{id:4,name:'Mitu Rahman',role:'Volunteer Coordinator',photo:null}]);
 const[zakatPool,setZakatPool]=useState(5000);
@@ -98,7 +99,7 @@ const[me,setMe]=useState({name:'',cat:'Donor Member',photo:null,hide:false,month
 const log=(what)=>setAudit(a=>[{who:'Admin',what,at:now()},...a]);
 const raised=50000+donations.filter(d=>d.ok&&d.fund==='General'&&Number(d.id.slice(2))>1003).reduce((s,d)=>s+d.amt,0);
 const spent=20000+expenses.filter(e=>e.id>3).reduce((s,e)=>s+Number(e.amt||0),0);
-const ctx={go,page,camp,setCamp,dcamp,setDcamp,dpre,setDpre,lang,t,donations,setDonations,members,setMembers,expenses,setExpenses,camps,setCamps,proofs,setProofs,bloodDonors,setBloodDonors,fb,setFb,audit,log,zakatPool,setZakatPool,me,setMe,setModal,cats,raised,spent,adminOK,setAdminOK,team,setTeam};
+const ctx={go,page,camp,setCamp,dcamp,setDcamp,dpre,setDpre,lang,t,donations,setDonations,members,setMembers,expenses,setExpenses,camps,setCamps,proofs,setProofs,bloodDonors,setBloodDonors,scholars,setScholars,fb,setFb,audit,log,zakatPool,setZakatPool,me,setMe,setModal,cats,raised,spent,adminOK,setAdminOK,team,setTeam};
 useEffect(()=>{Object.entries(THEME.colors).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));document.body.className=lang==='bn'?'bn':''},[lang]);
 useEffect(()=>{
   const u1=db.collection('donations').orderBy('ts','desc').onSnapshot(s=>{if(!s.empty)setDonations(s.docs.map(d=>({docId:d.id,...d.data()})))});
@@ -106,7 +107,8 @@ useEffect(()=>{
   const u3=db.collection('members').orderBy('ts','desc').onSnapshot(s=>{if(!s.empty)setMembers(s.docs.map(d=>({docId:d.id,...d.data()})))});
   const u4=db.collection('proofs').orderBy('ts','desc').onSnapshot(s=>{if(!s.empty)setProofs(s.docs.map(d=>({docId:d.id,...d.data()})))});
   const u5=db.collection('bloodDonors').orderBy('ts','desc').onSnapshot(s=>{if(!s.empty)setBloodDonors(s.docs.map(d=>({docId:d.id,...d.data()})))});
-  return()=>{u1();u2();u3();u4();u5()};
+  const u6=db.collection('scholars').orderBy('ts','desc').onSnapshot(s=>{if(!s.empty)setScholars(s.docs.map(d=>({docId:d.id,...d.data()})))});
+return()=>{u1();u2();u3();u4();u5();u6()};
 },[]);
 const nav=[['home','home'],['camp','campaigns'],['edu','education'],['trans','transparency'],['proof','proof-gallery'],['comm','community'],['tools','tools'],['dash','dashboard']];
 return(<Ctx.Provider value={ctx}>
@@ -242,8 +244,10 @@ function EduHero() {
 }
 
 function Students() {
-  const { setDpre, setModal, lang } = useT();
+  const { setDpre, setModal, lang, scholars } = useT();
   const bn = lang === 'bn';
+  const verifiedList = scholars.filter(s => s.approved === true);
+
   return (
     <Sec
       title={bn ? 'শিক্ষার্থী সহায়তা কার্ড' : 'Student Impact Cards'}
@@ -251,8 +255,8 @@ function Students() {
       sub={bn ? 'সরাসরি একজন শিক্ষার্থীকে স্পনসর করুন। নিরাপত্তার স্বার্থে পরিচয় গোপন রাখা হয়েছে।' : 'Sponsor one student directly. Identities are anonymised.'}
     >
       <div className='grid md:grid-cols-3 gap-4'>
-        {STU.map(s => (
-          <div key={s.n} className='card flex flex-col gap-2'>
+        {verifiedList.map(s => (
+          <div key={s.id || s.n} className='card flex flex-col gap-2'>
             <div className='flex items-center gap-3'>
               <div className='w-12 h-12 rounded-full be text-white flex items-center justify-center font-bold'>#{s.n}</div>
               <div>
@@ -262,9 +266,9 @@ function Students() {
               <span className='ml-auto bg-blue-50 te text-xs font-bold rounded-full px-2 py-0.5'>GPA {s.gpa}</span>
             </div>
             <p className='text-sm'><b>{bn ? 'প্রয়োজন:' : 'Needs:'}</b> {s.need}</p>
-            <Bar v={s.got} max={s.amt} color='var(--edu)' />
+            <Bar v={s.got || 0} max={s.amt || 1000} color='var(--edu)' />
             <p className='text-xs text-slate-500'>
-              {bn ? `এই মাসে ${money(s.amt)} এর মধ্যে ${money(s.got)} সংগৃহীত হয়েছে` : `${money(s.got)} of ${money(s.amt)} funded this month`}
+              {bn ? `এই মাসে ${money(s.amt)} এর মধ্যে ${money(s.got || 0)} সংগৃহীত হয়েছে` : `${money(s.got || 0)} of ${money(s.amt)} funded this month`}
             </p>
             <button
               className='btn be mt-auto'
@@ -281,25 +285,56 @@ function Students() {
     </Sec>
   );
 }
+
 function ScholarForm() {
-  const { log, lang } = useT();
+  const { log, lang, scholars, setScholars } = useT();
   const bn = lang === 'bn';
   const [st, setSt] = useState(1);
   const [done, setDone] = useState('');
+  const [busy, setBusy] = useState(false);
   const [f, setF] = useState({ name: '', age: '', cls: '', dist: '', guardian: '', phone: '', gpa: '', exam: '', rank: '', income: '', members: '', why: '' });
   const u = k => e => setF({ ...f, [k]: e.target.value });
   const ok = st === 1 ? f.name && f.cls && f.dist : st === 2 ? f.gpa && f.exam : f.income && f.why;
-  const labels = bn ? ['সাধারণ তথ্য', 'একাডেমিক ফলাফল', 'পারিবারিক প্রয়োজন'] : ['Basic info', 'Academic results', 'Family need'];
+  const labels = bn ? ['সাধারণ তথ্য', 'একাডেমিক ফলাফল', 'পারিবারিক প্রয়োজন'] : ['Basic info', 'Academic results', 'Family need'];
+
+  const handleSubmit = async () => {
+    setBusy(true);
+    const refNo = String(Math.floor(100 + Math.random() * 900));
+    const newItem = {
+      id: Date.now(),
+      n: refNo,
+      name: f.name,
+      age: f.age,
+      cls: f.cls,
+      d: f.dist,
+      guardian: f.guardian,
+      gpa: f.gpa,
+      exam: f.exam,
+      rank: f.rank,
+      income: f.income,
+      members: f.members,
+      need: f.why,
+      amt: 1500,
+      got: 0,
+      approved: false,
+      ts: Date.now()
+    };
+    await db.collection('scholars').add(newItem);
+    setScholars([newItem, ...scholars]);
+    log('Scholarship application: ' + f.name + ' (#' + refNo + ')');
+    setBusy(false);
+    setDone('SCH-' + refNo);
+  };
 
   if (done) return (
     <Sec title={bn ? 'বৃত্তির আবেদন' : 'Scholarship Application'} color='var(--edu)'>
       <div className='card max-w-lg text-center'>
         <div className='text-4xl'>🎓</div>
-        <b className='block mt-2'>{bn ? 'আবেদন গৃহীত হয়েছে' : 'Application received'}</b>
+        <b className='block mt-2'>{bn ? 'আবেদন গৃহীত হয়েছে' : 'Application received'}</b>
         <p className='text-sm text-slate-600'>
           {bn
-            ? `রেফারেন্স নম্বর ${done}। একজন স্বেচ্ছাসেবক স্কুলের প্রত্যয়নপত্র ও বাড়ি পরিদর্শনের মাধ্যমে তথ্য যাচাই করবেন।`
-            : `Reference ${done}. A volunteer will verify need and merit with a school letter and home visit.`}
+            ? `রেফারেন্স নম্বর ${done}। একজন স্বেচ্ছাসেবক তথ্য যাচাই করার পর অ্যাডমিন অনুমোদন দিলে আপনার প্রোফাইলটি ওয়েবসাইটে যুক্ত হবে।`
+            : `Reference ${done}. Once verified by a volunteer and approved by Admin, your student card will go live.`}
         </p>
       </div>
     </Sec>
@@ -309,7 +344,7 @@ function ScholarForm() {
     <Sec
       title={bn ? 'বৃত্তির আবেদন' : 'Scholarship Application'}
       color='var(--edu)'
-      sub={bn ? 'মাত্র তিনটি সহজ ধাপ। মোবাইল থেকেও সহজে পূরণ করা যায়।' : 'Three short steps. It works well on a phone.'}
+      sub={bn ? 'মাত্র তিনটি সহজ ধাপ। মোবাইল থেকেও সহজে পূরণ করা যায়।' : 'Three short steps. It works well on a phone.'}
     >
       <div className='card max-w-lg'>
         <div className='flex items-center mb-4'>
@@ -326,7 +361,7 @@ function ScholarForm() {
         {st === 1 && <>
           <Fld l={bn ? 'শিক্ষার্থীর নাম' : 'Student name'}><input className='inp' value={f.name} onChange={u('name')} /></Fld>
           <div className='grid grid-cols-2 gap-2'>
-            <Fld l={bn ? 'বয়স' : 'Age'}><input className='inp' type='number' value={f.age} onChange={u('age')} /></Fld>
+            <Fld l={bn ? 'বয়স' : 'Age'}><input className='inp' type='number' value={f.age} onChange={u('age')} /></Fld>
             <Fld l={bn ? 'শ্রেণি / স্তর' : 'Class / level'}><input className='inp' value={f.cls} onChange={u('cls')} /></Fld>
           </div>
           <Fld l={bn ? 'জেলা' : 'District'}>
@@ -348,58 +383,18 @@ function ScholarForm() {
 
         {st === 3 && <>
           <div className='grid grid-cols-2 gap-2'>
-            <Fld l={bn ? 'মাসিক পারিবারিক আয় (৳)' : 'Monthly family income (৳)'}><input className='inp' type='number' value={f.income} onChange={u('income')} /></Fld>
+            <Fld l={bn ? 'মাসিক পারিবারিক আয় (৳)' : 'Monthly family income (৳)'}><input className='inp' type='number' value={f.income} onChange={u('income')} /></Fld>
             <Fld l={bn ? 'পরিবারের সদস্য সংখ্যা' : 'Family members'}><input className='inp' type='number' value={f.members} onChange={u('members')} /></Fld>
           </div>
-          <Fld l={bn ? 'কী ধরনের সহায়তা প্রয়োজন এবং কেন?' : 'What support do you need and why?'}><textarea className='inp' rows='3' value={f.why} onChange={u('why')} /></Fld>
+          <Fld l={bn ? 'কী ধরনের সহায়তা প্রয়োজন এবং কেন?' : 'What support do you need and why?'}><textarea className='inp' rows='3' value={f.why} onChange={u('why')} /></Fld>
         </>}
 
         <div className='flex justify-between mt-2'>
           <button className='btn bg-slate-500' disabled={st === 1} onClick={() => setSt(st - 1)}>{bn ? 'পূর্ববর্তী' : 'Back'}</button>
           {st < 3
             ? <button className='btn be' disabled={!ok} onClick={() => setSt(st + 1)}>{bn ? 'পরবর্তী' : 'Next'}</button>
-            : <button className='btn be' disabled={!ok} onClick={() => { setDone('SCH-' + String(Date.now()).slice(-5)); log('Scholarship application: ' + f.name); }}>{bn ? 'আবেদন জমা দিন' : 'Submit application'}</button>}
+            : <button className='btn be' disabled={!ok || busy} onClick={handleSubmit}>{busy ? 'Submitting...' : (bn ? 'আবেদন জমা দিন' : 'Submit application')}</button>}
         </div>
-      </div>
-    </Sec>
-  );
-}
-
-function Mentor() {
-  const { members, setMembers, log, lang } = useT();
-  const bn = lang === 'bn';
-  const [f, setF] = useState({ name: '', field: '', email: '' });
-  const [ok, setOk] = useState(false);
-
-  return (
-    <Sec
-      title={bn ? 'মেন্টর হিসেবে যুক্ত হোন' : 'Become a Mentor'}
-      color='var(--edu)'
-      sub={bn ? 'সপ্তাহে মাত্র এক ঘণ্টা একজন শিক্ষার্থীকে দিকনির্দেশনা দিন। বিশ্ববিদ্যালয় শিক্ষার্থী ও পেশাজীবীরা স্বাগতম।' : 'Guide a student for one hour a week. University students and professionals are welcome.'}
-    >
-      <div className='card max-w-lg'>
-        <Fld l={bn ? 'নাম' : 'Name'}>
-          <input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
-        </Fld>
-        <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}>
-          <input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} />
-        </Fld>
-        <Fld l={bn ? 'ইমেইল' : 'Email'}>
-          <input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
-        </Fld>
-        <button
-          className='btn be'
-          disabled={!f.name}
-          onClick={() => {
-            setMembers([...members, { id: Date.now(), name: f.name, role: 'Volunteer', district: 'Dhaka', phone: '-', bg: '', cat: 'Volunteer', consent: false, approved: false }]);
-            log('Mentor signup: ' + f.name);
-            setOk(true);
-            setF({ name: '', field: '', email: '' });
-          }}
-        >
-          {bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor'}
-        </button>
-        {ok && <p className='text-sm text-green-700 mt-2'>{bn ? 'ধন্যবাদ! একজন অ্যাডমিন আপনার মেন্টর প্রোফাইলটি অনুমোদন করবেন।' : 'Thank you! An admin will approve your mentor profile.'}</p>}
       </div>
     </Sec>
   );
