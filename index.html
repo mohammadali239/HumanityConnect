@@ -370,12 +370,23 @@ function Mentor() {
   const bn = lang === 'bn';
   const [f, setF] = useState({ name: '', field: '', email: '' });
   const [ok, setOk] = useState(false);
+
   return (
-    <Sec 'Become 'Guide 'মেন্টর 'সপ্তাহে : ? Mentor'} University a and are color="var(--edu)" for hour one professionals student students sub="{bn" title="{bn" week. welcome.'} এক একজন ও ঘণ্টা দিকনির্দেশনা দিন। পেশাজীবীরা বিশ্ববিদ্যালয় মাত্র যুক্ত শিক্ষার্থী শিক্ষার্থীকে স্বাগতম।' হিসেবে হোন'>
+    <Sec
+      title={bn ? 'মেন্টর হিসেবে যুক্ত হোন' : 'Become a Mentor'}
+      color='var(--edu)'
+      sub={bn ? 'সপ্তাহে মাত্র এক ঘণ্টা একজন শিক্ষার্থীকে দিকনির্দেশনা দিন। বিশ্ববিদ্যালয় শিক্ষার্থী ও পেশাজীবীরা স্বাগতম।' : 'Guide a student for one hour a week. University students and professionals are welcome.'}
+    >
       <div className='card max-w-lg'>
-        <Fld 'Name'} 'নাম' : ? l="{bn"><input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /></Fld>
-        <Fld 'University 'বিশ্ববিদ্যালয় / : ? l="{bn" profession'} পেশা'><input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} /></Fld>
-        <Fld 'Email'} 'ইমেইল' : ? l="{bn"><input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></Fld>
+        <Fld l={bn ? 'নাম' : 'Name'}>
+          <input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />
+        </Fld>
+        <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}>
+          <input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} />
+        </Fld>
+        <Fld l={bn ? 'ইমেইল' : 'Email'}>
+          <input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
+        </Fld>
         <button
           className='btn be'
           disabled={!f.name}
@@ -393,7 +404,6 @@ function Mentor() {
     </Sec>
   );
 }
-
 function EduPage() {
   return (<><EduHero/><Students/><EduRules/><ScholarForm/><Mentor/></>);
 }
