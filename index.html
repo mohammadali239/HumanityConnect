@@ -210,7 +210,7 @@ function EduHero() {
     <div 
       className='text-white relative'
       style={{
-        backgroundImage: `linear-gradient(to right, rgba(0, 31, 63, 0.92), rgba(0, 31, 63, 0.55)), url('edu%20pic.jpeg')`,
+        backgroundImage: `linear-gradient(to right, rgba(0, 31, 63, 0.92), rgba(0, 31, 63, 0.55)), url('edu%20pic.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
@@ -238,47 +238,6 @@ function EduHero() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Students() {
-  const { setDpre, setModal, lang } = useT();
-  const bn = lang === 'bn';
-  return (
-    <Sec
-      title={bn ? 'শিক্ষার্থী সহায়তা কার্ড' : 'Student Impact Cards'}
-      color='var(--edu)'
-      sub={bn ? 'সরাসরি একজন শিক্ষার্থীকে স্পনসর করুন। নিরাপত্তার স্বার্থে পরিচয় গোপন রাখা হয়েছে।' : 'Sponsor one student directly. Identities are anonymised.'}
-    >
-      <div className='grid md:grid-cols-3 gap-4'>
-        {STU.map(s => (
-          <div key={s.n} className='card flex flex-col gap-2'>
-            <div className='flex items-center gap-3'>
-              <div className='w-12 h-12 rounded-full be text-white flex items-center justify-center font-bold'>#{s.n}</div>
-              <div>
-                <b>{bn ? `শিক্ষার্থী #${s.n}` : `Student #${s.n}`}</b><br />
-                <span className='text-xs text-slate-500'>{s.cls}, {s.d}</span>
-              </div>
-              <span className='ml-auto bg-blue-50 te text-xs font-bold rounded-full px-2 py-0.5'>GPA {s.gpa}</span>
-            </div>
-            <p className='text-sm'><b>{bn ? 'প্রয়োজন:' : 'Needs:'}</b> {s.need}</p>
-            <Bar v={s.got} max={s.amt} color='var(--edu)' />
-            <p className='text-xs text-slate-500'>
-              {bn ? `এই মাসে ${money(s.amt)} এর মধ্যে ${money(s.got)} সংগৃহীত হয়েছে` : `${money(s.got)} of ${money(s.amt)} funded this month`}
-            </p>
-            <button
-              className='btn be mt-auto'
-              onClick={() => {
-                setDpre({ amt: s.amt, note: 'Sponsoring Student #' + s.n + ' (' + s.need + ')' });
-                setModal('donate');
-              }}
-            >
-              {bn ? 'এই শিক্ষার্থীকে স্পনসর করুন' : 'Sponsor This Student'}
-            </button>
-          </div>
-        ))}
-      </div>
-    </Sec>
   );
 }
 function ScholarForm() {
