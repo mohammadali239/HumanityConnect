@@ -320,7 +320,6 @@ function ScholarForm() {
       ts: Date.now()
     };
     await db.collection('scholars').add(newItem);
-    setScholars([newItem, ...scholars]);
     log('Scholarship application: ' + f.name + ' (#' + refNo + ')');
     setBusy(false);
     setDone('SCH-' + refNo);
@@ -720,7 +719,7 @@ function AScholars(){
   const approve=async s=>{
     const finalAmt=Number(amtEdit[s.id]||s.amt||1500);
     setScholars(scholars.map(x=>x.id===s.id?{...x,approved:true,amt:finalAmt}:x));
-    if(s.docId)await db.collection('scholars').doc(s.docId).update({approved:true,amt:finalAmt});
+if(s.docId){await db.collection('scholars').doc(s.docId).update({approved:true,amt:finalAmt});}else{const snap=await db.collection('scholars').where('id','==',s.id).get();snap.forEach(d=>d.ref.update({approved:true,amt:finalAmt}));}
     log(`Approved student #${s.n} (${s.name}) for ৳${finalAmt}/mo`);
   };
 
