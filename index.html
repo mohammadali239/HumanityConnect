@@ -403,6 +403,29 @@ function Mentor() {
   const bn = lang === 'bn';
   const [f, setF] = useState({ name: '', field: '', email: '' });
   const [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const submitMentor = async () => {
+    setBusy(true);
+    const item = {
+      id: Date.now(),
+      name: f.name,
+      role: 'Volunteer',
+      district: f.field || 'Mentor',
+      phone: f.email || '-',
+      bg: '',
+      cat: 'Mentor (' + (f.field || 'Volunteer') + ')',
+      consent: false,
+      approved: false,
+      ts: Date.now()
+    };
+    await db.collection('members').add(item);
+    setMembers([item, ...members]);
+    log('Mentor signup: ' + f.name + ' (' + f.field + ' · ' + f.email + ')');
+    setBusy(false);
+    setOk(true);
+    setF({ name: '', field: '', email: '' });
+  };
 
   return (
     <Sec
@@ -417,27 +440,17 @@ function Mentor() {
         <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}>
           <input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} />
         </Fld>
-        <Fld l={bn ? 'ইমেইল' : 'Email'}>
+        <Fld l={bn ? 'ইমেইল / ফোন' : 'Email / Phone'}>
           <input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
         </Fld>
-        <button
-          className='btn be'
-          disabled={!f.name}
-          onClick={() => {
-            setMembers([...members, { id: Date.now(), name: f.name, role: 'Volunteer', district: 'Dhaka', phone: '-', bg: '', cat: 'Volunteer', consent: false, approved: false }]);
-            log('Mentor signup: ' + f.name);
-            setOk(true);
-            setF({ name: '', field: '', email: '' });
-          }}
-        >
-          {bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor'}
+        <button className='btn be' disabled={!f.name || busy} onClick={submitMentor}>
+          {busy ? 'Submitting...' : (bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor')}
         </button>
         {ok && <p className='text-sm text-green-700 mt-2'>{bn ? 'ধন্যবাদ! একজন অ্যাডমিন আপনার মেন্টর প্রোফাইলটি অনুমোদন করবেন।' : 'Thank you! An admin will approve your mentor profile.'}</p>}
       </div>
     </Sec>
   );
 }
-
 function EduPage() {
   return (<><EduHero/><Students/><EduRules/><ScholarForm/><Mentor/></>);
 }
