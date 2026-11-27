@@ -452,13 +452,13 @@ const LV=[[500,'📚','1 month of books & stationery for a student'],[2000,'🧺
 function ImpactPro(){const{setModal,setDpre}=useT();const[v,setV]=useState(2000);let i=0;LV.forEach((l,k)=>{if(v>=l[0])i=k});const cur=LV[i];const times=Math.floor(v/cur[0]);
 return(<Sec id='impact' title='Impact Calculator' sub='Drag to see what your donation can do.'><div className='card text-center'><div className='relative h-24 w-24 mx-auto'>{LV.map((l,k)=><span key={k} className='absolute inset-0 flex items-center justify-center text-6xl' style={{opacity:k===i?1:0,transform:k===i?'scale(1) translateY(0)':'scale(.5) translateY(14px)',transition:'all .45s ease'}}>{l[1]}</span>)}</div><p className='text-3xl font-extrabold tp mt-2'>{money(v)}</p><p className='text-slate-700 mb-3'>≈ {times>1?times+' × ':''}{cur[2]}</p><input type='range' min='500' max='50000' step='500' value={v} onChange={e=>setV(+e.target.value)} className='w-full' aria-label='Donation amount'/><div className='flex justify-between text-xs text-slate-500 mt-1'><span>📚 ৳500</span><span>🧺 ৳2,000</span><span>🩺 ৳10,000</span><span>🎓 ৳25,000</span></div><button className='btn bc mt-4' onClick={()=>{setDpre({amt:v});setModal('donate')}}>Donate {money(v)}</button></div></Sec>)}
 
-const ANAV=[['overview','📊','Overview'],['team','👑','Leadership & Team'],['people','🧑‍🤝‍🧑','Approve Members / Volunteers'],['blood','🩸','Blood Donors'],['donations','✅','Verify Donations'],['proof','🎥','Upload Video / Photo Proof'],['campaigns','📣','Manage Campaigns'],['expenses','🧾','Log Expenses'],['feedback','💬','Feedback & Complaints'],['audit','🛡','System Audit Log']];
+const ANAV=[['overview','📊','Overview'],['team','👑','Leadership & Team'],['people','🧑‍🤝‍🧑','Approve Members / Volunteers'],['blood','🩸','Blood Donors'],['scholars','🎓','Scholarships'],['scholars','🎓','Scholarships'],['donations','✅','Verify Donations'],['proof','🎥','Upload Video / Photo Proof'],['campaigns','📣','Manage Campaigns'],['expenses','🧾','Log Expenses'],['feedback','💬','Feedback & Complaints'],['audit','🛡','System Audit Log']];
 function ATeam(){const{team,setTeam,log,adminOK}=useT();const[f,setF]=useState({name:'',role:'',link:'',photo:null});return(<div className='space-y-4'>{adminOK&&<div className='card max-w-lg'><b>Add Team Member / Leader</b><Fld l='Name'><input className='inp' value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld><Fld l='Role (e.g. Founder & CEO)'><input className='inp' value={f.role} onChange={e=>setF({...f,role:e.target.value})}/></Fld><Fld l='Portfolio / Social Link (optional)'><input className='inp' placeholder='https://...' value={f.link} onChange={e=>setF({...f,link:e.target.value})}/></Fld><PhotoPick key={team.length} label='Profile Photo' onPick={p=>setF({...f,photo:p})}/><button className='btn bp' disabled={!f.name||!f.role} onClick={()=>{setTeam([...team,{id:Date.now(),...f}]);log('Added team member: '+f.name);setF({name:'',role:'',link:'',photo:null})}}>Add Profile</button></div>}<div className='card'><b>Leadership & Team Profiles</b><div className='grid sm:grid-cols-2 gap-3 mt-3'>{team.map(m=><div key={m.id} className='flex items-center gap-3 border rounded-lg p-2.5 text-sm'>{m.photo?<img src={m.photo} className='w-12 h-12 rounded-full object-cover' alt=''/>:<div className='w-12 h-12 rounded-full bp text-white font-bold flex items-center justify-center'>{m.name[0]}</div>}<div className='flex-1'><b>{m.name}</b><p className='text-xs text-slate-500'>{m.role}</p>{m.link&&<a href={m.link.startsWith('http')?m.link:'https://'+m.link} target='_blank' rel='noreferrer' className='inline-block mt-1 text-xs font-semibold text-blue-700 hover:underline'>View Portfolio ↗</a>}</div>{adminOK&&<div className='flex flex-col gap-1 items-end'><button className='text-xs text-blue-600 font-bold' onClick={()=>{const u=prompt('Enter Portfolio / Profile URL:',m.link||'');if(u!==null){setTeam(team.map(x=>x.id===m.id?{...x,link:u.trim()}:x));log('Updated portfolio link for: '+m.name)}}}>{m.link?'Edit Link':'+ Add Link'}</button><button className='text-xs tb font-bold' onClick={()=>{setTeam(team.filter(x=>x.id!==m.id));log('Removed team member: '+m.name)}}>Remove</button></div>}</div>)}</div></div></div>)}
 function AOverview(){const{raised,spent,members,donations,audit}=useT();return(<div className='space-y-4'><div className='grid grid-cols-2 md:grid-cols-4 gap-3'>{[['Collected',money(raised)],['Spent',money(spent)],['People',members.length],['Donations',donations.length]].map(([a,b])=><div key={a} className='card'><div className='text-xs text-slate-500'>{a}</div><div className='text-xl font-extrabold tp'>{b}</div></div>)}</div><div className='card text-sm'><b>Recent activity</b>{audit.slice(0,5).map((a,i)=><p key={i} className='border-b py-1'>{a.what} <span className='text-xs text-slate-400'>{a.at}</span></p>)}</div></div>)}
 function APeople(){const{members,setMembers,log,setModal,adminOK}=useT();const pend=members.filter(m=>m.approved===false);return(<div className='space-y-4'><div className='card'><div className='flex justify-between items-center mb-2'><b>Pending approvals ({pend.length})</b>{adminOK&&<button className='btn bp' onClick={()=>setModal('reg')}>+ Add person</button>}</div>{pend.length?pend.map(m=><div key={m.id} className='flex items-center gap-2 border-b py-2 text-sm'><Avatar m={m}/><span className='flex-1'><b>{m.name}</b> · {m.role} · {m.district}</span>{adminOK&&<><button className='btn bp !py-1' onClick={()=>{setMembers(members.map(x=>x.id===m.id?{...x,approved:true}:x));log('Approved '+m.name)}}>Approve</button><button className='btn bb !py-1' onClick={()=>{setMembers(members.filter(x=>x.id!==m.id));log('Rejected '+m.name)}}>Reject</button></>}</div>):<p className='text-sm text-slate-500'>Nothing waiting. New registrations appear here.</p>}</div><AMembers/></div>)}
 function AAudit(){const{audit}=useT();return<div className='card space-y-1 text-sm'>{audit.map((a,i)=><p key={i} className='border-b py-1'><b>{a.who}</b> · {a.what} <span className='text-xs text-slate-400'>{a.at}</span></p>)}</div>}
 function AdminPro(){const{adminOK,setAdminOK,members,donations,fb}=useT();const[code,setCode]=useState('');const[tab,setTab]=useState('overview');const[open,setOpen]=useState(false);const[err,setErr]=useState('');
-const pm=members.filter(m=>m.approved===false).length,pd=donations.filter(d=>!d.ok).length,uf=fb.filter(x=>x.status==='Received').length;const badge={people:pm,donations:pd,feedback:uf};const V={overview:<AOverview/>,team:<ATeam/>,people:<APeople/>,blood:<ABlood/>,donations:<ADon/>,proof:<AProof/>,campaigns:<ACamp/>,expenses:<AExp/>,feedback:<AFb/>,audit:<AAudit/>};
+const pm=members.filter(m=>m.approved===false).length,pd=donations.filter(d=>!d.ok).length,uf=fb.filter(x=>x.status==='Received').length;const badge={people:pm,donations:pd,feedback:uf};const V={overview:<AOverview/>,team:<ATeam/>,people:<APeople/>,blood:<ABlood/>,scholars:<AScholars/>,donations:<ADon/>,proof:<AProof/>,campaigns:<ACamp/>,expenses:<AExp/>,feedback:<AFb/>,audit:<AAudit/>};
 const lockBar=adminOK?(<div className='card mb-4 bg-green-50 border-green-300 flex justify-between items-center flex-wrap gap-2'><span className='text-sm font-bold text-green-800'>🔓 Admin Edit Mode Active</span><button className='btn bg-slate-600 !py-1' onClick={()=>setAdminOK(false)}>Lock Admin</button></div>):(<div className='card mb-4 bg-amber-50 border-amber-300 flex justify-between items-center flex-wrap gap-2'><span className='text-xs text-slate-700'>👁 <b>Public View:</b> Unlock to Add / Remove.</span><div className='flex gap-2 items-center'><input className='inp !w-40 !py-1' type='password' placeholder='Admin Password' value={code} onChange={e=>{setCode(e.target.value);setErr('')}}/><button className='btn bp !py-1' onClick={()=>code==='HC@Ali2026'?(setAdminOK(true),setCode('')):setErr('Wrong!')}>Unlock</button>{err&&<span className='text-xs tb font-bold'>{err}</span>}</div></div>);
 return(<div className='max-w-6xl mx-auto px-4 py-6'>{lockBar}<div className='grid grid-cols-3 gap-3 mb-4'>{[['Pending member approvals',pm,'people'],['Pending donations',pd,'donations'],['Unread suggestions / complaints',uf,'feedback']].map(([l,n,k])=><button key={k} onClick={()=>setTab(k)} className='card text-left relative'><span className='text-xs text-slate-500'>{l}</span><div className='text-2xl font-extrabold'>{n}</div>{n>0&&<span className='absolute top-2 right-2 bb text-white text-xs rounded-full px-2'>{n}</span>}</button>)}</div><div className='md:flex gap-4 items-start'><button className='md:hidden btn bp mb-2' onClick={()=>setOpen(!open)}>☰ Menu</button><aside className={'md:w-64 shrink-0 mb-3 '+(open?'block':'hidden md:block')}><div className='card !p-2 space-y-1'>{ANAV.map(([k,i,l])=><button key={k} onClick={()=>{setTab(k);setOpen(false)}} className={'w-full text-left rounded-lg px-3 py-2 text-sm font-semibold flex justify-between items-center '+(tab===k?'bp text-white':'hover:bg-slate-100')}><span>{i} {l}</span>{badge[k]>0&&<span className='bb text-white text-xs rounded-full px-1.5'>{badge[k]}</span>}</button>)}</div></aside><div className='flex-1 min-w-0'>{V[tab]}</div></div></div>)}
 
@@ -670,6 +670,67 @@ return(<div className='space-y-4'>
 {adminOK&&<div className='card max-w-xl'><b>Direct Add Blood Donor (Admin)</b><Fld l='Full Name *'><input className='inp' value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld><div className='grid grid-cols-2 gap-2'><Fld l='Blood Group *'><select className='inp' value={f.bg} onChange={e=>setF({...f,bg:e.target.value})}>{BG.map(x=><option key={x}>{x}</option>)}</select></Fld><Fld l='District'><select className='inp' value={f.district} onChange={e=>setF({...f,district:e.target.value})}>{DISTRICTS.map(x=><option key={x}>{x}</option>)}</select></Fld></div><Fld l='Present / Current Address *'><input className='inp' placeholder='e.g. Ashulia, Savar, Dhaka' value={f.address} onChange={e=>setF({...f,address:e.target.value})}/></Fld><div className='grid grid-cols-2 gap-2'><Fld l='Phone Number *'><input className='inp' placeholder='017XXXXXXXX' value={f.phone} onChange={e=>setF({...f,phone:e.target.value})}/></Fld><Fld l='Donor Secret PIN *'><input className='inp' placeholder='e.g. 4589' value={f.pin} onChange={e=>setF({...f,pin:e.target.value})}/></Fld></div><Fld l='Last Blood Donation Date (optional)'><input type='date' className='inp' value={f.lastDonate} onChange={e=>setF({...f,lastDonate:e.target.value})}/></Fld><PhotoPick key={bloodDonors.length} label='Donor Photo (optional)' onPick={p=>setF({...f,photo:p})}/><button className='btn bb' disabled={!f.name||!f.phone||!f.address||busy} onClick={save}>{busy?'Saving...':'Add Blood Donor'}</button></div>}
 <div className='card'><b>Approved Blood Donors ({active.length})</b><div className='space-y-2 mt-2'>{active.map(m=><div key={m.id} className='flex items-center gap-3 border-b py-2 text-sm'><Avatar m={m}/><div className='flex-1'><b>{m.name}</b> <span className='bb text-white text-xs font-bold rounded px-1.5'>{m.bg}</span><p className='text-xs text-slate-500'>📍 {m.address} · 📞 {m.phone} · Last: {m.lastDonate||'None'} {adminOK&&<b className='text-blue-700'>· Secret PIN: {m.pin||'1234'}</b>}</p></div>{adminOK&&<button className='text-xs tb font-bold' onClick={()=>remove(m)}>Remove</button>}</div>)}</div></div></div>)}
 function AFb(){const{fb,setFb,log}=useT();return(<div className="card">{fb.map(x=><div key={x.id} className="flex justify-between items-center gap-2 border-b py-2 text-sm"><span><b>{x.type}:</b> {x.text}</span><select className="inp !w-auto" value={x.status} onChange={e=>{setFb(fb.map(y=>y.id===x.id?{...y,status:e.target.value}:y));log(`Feedback #${x.id} → ${e.target.value}`)}}>{['Received','Under Review','Resolved'].map(s=><option key={s}>{s}</option>)}</select></div>)}</div>)}
+function AScholars(){
+  const{scholars,setScholars,log,adminOK}=useT();
+  const[amtEdit,setAmtEdit]=useState({});
+  const pend=scholars.filter(s=>s.approved===false);
+  const active=scholars.filter(s=>s.approved===true);
 
+  const approve=async s=>{
+    const finalAmt=Number(amtEdit[s.id]||s.amt||1500);
+    setScholars(scholars.map(x=>x.id===s.id?{...x,approved:true,amt:finalAmt}:x));
+    if(s.docId)await db.collection('scholars').doc(s.docId).update({approved:true,amt:finalAmt});
+    log(`Approved student #${s.n} (${s.name}) for ৳${finalAmt}/mo`);
+  };
+
+  const remove=async s=>{
+    if(s.docId)await db.collection('scholars').doc(s.docId).delete();
+    setScholars(scholars.filter(x=>x.id!==s.id));
+    log(`Removed student #${s.n}`);
+  };
+
+  return(
+    <div className='space-y-4'>
+      <div className='card border-blue-300 bg-blue-50/40'>
+        <b>⏳ Pending Scholarship Applications ({pend.length})</b>
+        <div className='space-y-3 mt-3'>
+          {pend.length?pend.map(s=>(
+            <div key={s.id} className='border rounded-xl p-3 bg-white text-sm space-y-1.5'>
+              <div className='flex justify-between items-center'>
+                <b>🎓 {s.name} <span className='text-xs text-slate-500'>(ID #{s.n} · Age {s.age})</span></b>
+                <span className='bg-blue-100 te text-xs font-bold px-2 py-0.5 rounded-full'>GPA {s.gpa} ({s.exam})</span>
+              </div>
+              <p className='text-xs text-slate-600'>📚 {s.cls} · 📍 {s.d} · 👨‍👩‍👧 Family Income: ৳{s.income}/mo ({s.members} members)</p>
+              <p className='text-xs text-slate-600'>📞 Guardian: {s.guardian}</p>
+              <p className='text-xs bg-slate-50 p-2 rounded border'><b>Need:</b> {s.need}</p>
+              {adminOK&&(
+                <div className='flex items-center gap-2 pt-1 flex-wrap'>
+                  <span className='text-xs font-bold'>Monthly Target (৳):</span>
+                  <input type='number' className='inp !w-28 !py-1' defaultValue={s.amt||1500} onChange={e=>setAmtEdit({...amtEdit,[s.id]:e.target.value})}/>
+                  <button className='btn be !py-1 !px-3 text-xs' onClick={()=>approve(s)}>✔ Verify & Publish Card</button>
+                  <button className='btn bb !py-1 !px-3 text-xs' onClick={()=>remove(s)}>Reject</button>
+                </div>
+              )}
+            </div>
+          )):<p className='text-xs text-slate-500'>No pending student applications.</p>}
+        </div>
+      </div>
+
+      <div className='card'>
+        <b>✅ Verified & Live Student Cards ({active.length})</b>
+        <div className='space-y-2 mt-2'>
+          {active.map(s=>(
+            <div key={s.id} className='flex items-center justify-between border-b py-2 text-sm'>
+              <div>
+                <b>Student #{s.n}</b> ({s.name}) — <span className='text-xs text-slate-500'>{s.cls}, {s.d} · GPA {s.gpa} · Target: {money(s.amt)}/mo</span>
+              </div>
+              {adminOK&&<button className='text-xs tb font-bold' onClick={()=>remove(s)}>Remove</button>}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script></body></html>
