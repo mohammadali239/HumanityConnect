@@ -200,17 +200,167 @@ return(<Sec id='transparency' title='Financial Transparency & Where Your Money G
 
 const STU=[{n:'104',cls:'Class 10',d:'Dinajpur',gpa:'5.00',need:'Monthly Tuition & Science Books',amt:1500,got:900},{n:'112',cls:'Class 8',d:'Kurigram',gpa:'4.88',need:'School Fees & Uniform',amt:1000,got:250},{n:'087',cls:'HSC 1st Year',d:'Barishal',gpa:'5.00',need:'Coaching Fees & Reference Books',amt:2000,got:1400}];
 function EduHero(){return(<div className='be text-white'><div className='max-w-6xl mx-auto px-4 py-12'><p className='text-sm opacity-80'>Education Support for Meritorious Students</p><h2 className='text-3xl md:text-4xl font-extrabold max-w-3xl leading-snug mt-1'>A bright mind should never be switched off by an empty wallet.</h2><p className='mt-3 max-w-2xl opacity-90'>Imagine a girl who studies by a kerosene lamp after helping her mother sell vegetables, and still comes first in her district. A small monthly sponsorship keeps her in class. Every card below is a child like her. Names are withheld to protect minors.</p><div className='grid grid-cols-3 gap-3 mt-6 max-w-xl text-center'>{[['48','scholarships awarded'],['120','students given books'],['35','active mentors']].map(([a,b])=><div key={b} className='bg-white/15 rounded-xl py-3'><div className='text-2xl font-extrabold'>{a}</div><div className='text-xs'>{b} (sample)</div></div>)}</div></div></div>)}
-function Students(){const{setDpre,setModal}=useT();return(<Sec title='Student Impact Cards' color='var(--edu)' sub='Sponsor one student directly. Identities are anonymised.'><div className='grid md:grid-cols-3 gap-4'>{STU.map(s=><div key={s.n} className='card flex flex-col gap-2'><div className='flex items-center gap-3'><div className='w-12 h-12 rounded-full be text-white flex items-center justify-center font-bold'>#{s.n}</div><div><b>Student #{s.n}</b><br/><span className='text-xs text-slate-500'>{s.cls}, {s.d}</span></div><span className='ml-auto bg-blue-50 te text-xs font-bold rounded-full px-2 py-0.5'>GPA {s.gpa}</span></div><p className='text-sm'><b>Needs:</b> {s.need}</p><Bar v={s.got} max={s.amt} color='var(--edu)'/><p className='text-xs text-slate-500'>{money(s.got)} of {money(s.amt)} funded this month</p><button className='btn be mt-auto' onClick={()=>{setDpre({amt:s.amt,note:'Sponsoring Student #'+s.n+' ('+s.need+')'});setModal('donate')}}>Sponsor This Student</button></div>)}</div></Sec>)}
-function ScholarForm(){const{log}=useT();const[st,setSt]=useState(1);const[done,setDone]=useState('');const[f,setF]=useState({name:'',age:'',cls:'',dist:'',guardian:'',phone:'',gpa:'',exam:'',rank:'',income:'',members:'',why:''});const u=k=>e=>setF({...f,[k]:e.target.value});
-const ok=st===1?f.name&&f.cls&&f.dist:st===2?f.gpa&&f.exam:f.income&&f.why;const labels=['Basic info','Academic results','Family need'];
-if(done)return(<Sec title='Scholarship Application' color='var(--edu)'><div className='card max-w-lg text-center'><div className='text-4xl'>🎓</div><b className='block mt-2'>Application received </b><p className='text-sm text-slate-600'>Reference {done}. A volunteer will verify need and merit with a school letter and home visit.</p></div></Sec>);
-return(<Sec title='Scholarship Application' color='var(--edu)' sub='Three short steps. It works well on a phone.'><div className='card max-w-lg'><div className='flex items-center mb-4'>{labels.map((l,i)=><div key={l} className='flex-1 text-center text-xs'><div className={'mx-auto w-8 h-8 rounded-full flex items-center justify-center font-bold '+(st>i+1?'bg-green-600 text-white':st===i+1?'be text-white':'bg-slate-200')}>{st>i+1?'✔':i+1}</div>{l}</div>)}</div>
-{st===1&&<><Fld l='Student name'><input className='inp' value={f.name} onChange={u('name')}/></Fld><div className='grid grid-cols-2 gap-2'><Fld l='Age'><input className='inp' type='number' value={f.age} onChange={u('age')}/></Fld><Fld l='Class / level'><input className='inp' value={f.cls} onChange={u('cls')}/></Fld></div><Fld l='District'><select className='inp' value={f.dist} onChange={u('dist')}><option value=''>Select</option>{DISTRICTS.map(x=><option key={x}>{x}</option>)}</select></Fld><Fld l='Guardian name & phone'><input className='inp' value={f.guardian} onChange={u('guardian')}/></Fld></>}
-{st===2&&<><div className='grid grid-cols-2 gap-2'><Fld l='Last GPA / marks'><input className='inp' value={f.gpa} onChange={u('gpa')}/></Fld><Fld l='Exam'><input className='inp' placeholder='e.g. JSC, SSC' value={f.exam} onChange={u('exam')}/></Fld></div><Fld l='Class rank / awards (optional)'><input className='inp' value={f.rank} onChange={u('rank')}/></Fld></>}
-{st===3&&<><div className='grid grid-cols-2 gap-2'><Fld l='Monthly family income (৳)'><input className='inp' type='number' value={f.income} onChange={u('income')}/></Fld><Fld l='Family members'><input className='inp' type='number' value={f.members} onChange={u('members')}/></Fld></div><Fld l='What support do you need and why?'><textarea className='inp' rows='3' value={f.why} onChange={u('why')}/></Fld></>}
-<div className='flex justify-between mt-2'><button className='btn bg-slate-500' disabled={st===1} onClick={()=>setSt(st-1)}>Back</button>{st<3?<button className='btn be' disabled={!ok} onClick={()=>setSt(st+1)}>Next</button>:<button className='btn be' disabled={!ok} onClick={()=>{setDone('SCH-'+String(Date.now()).slice(-5));log('Scholarship application: '+f.name)}}>Submit application</button>}</div></div></Sec>)}
-function Mentor(){const{members,setMembers,log}=useT();const[f,setF]=useState({name:'',field:'',email:''});const[ok,setOk]=useState(false);return(<Sec title='Become a Mentor' color='var(--edu)' sub='Guide a student for one hour a week. University students and professionals are welcome.'><div className='card max-w-lg'><Fld l='Name'><input className='inp' value={f.name} onChange={e=>setF({...f,name:e.target.value})}/></Fld><Fld l='University / profession'><input className='inp' value={f.field} onChange={e=>setF({...f,field:e.target.value})}/></Fld><Fld l='Email'><input className='inp' value={f.email} onChange={e=>setF({...f,email:e.target.value})}/></Fld><button className='btn be' disabled={!f.name} onClick={()=>{setMembers([...members,{id:Date.now(),name:f.name,role:'Volunteer',district:'Dhaka',phone:'-',bg:'',cat:'Volunteer',consent:false,approved:false}]);log('Mentor signup: '+f.name);setOk(true);setF({name:'',field:'',email:''})}}>Sign up as mentor</button>{ok&&<p className='text-sm text-green-700 mt-2'>Thank you! An admin will approve your mentor profile.</p>}</div></Sec>)}
-function EduPage(){return(<><EduHero/><Students/><EduRules/><ScholarForm/><Mentor/></>)}
+function Students() {
+  const { setDpre, setModal, lang } = useT();
+  const bn = lang === 'bn';
+  return (
+    <Sec
+      title={bn ? 'শিক্ষার্থী সহায়তা কার্ড' : 'Student Impact Cards'}
+      color='var(--edu)'
+      sub={bn ? 'সরাসরি একজন শিক্ষার্থীকে স্পনসর করুন। নিরাপত্তার স্বার্থে পরিচয় গোপন রাখা হয়েছে।' : 'Sponsor one student directly. Identities are anonymised.'}
+    >
+      <div className='grid md:grid-cols-3 gap-4'>
+        {STU.map(s => (
+          <div key={s.n} className='card flex flex-col gap-2'>
+            <div className='flex items-center gap-3'>
+              <div className='w-12 h-12 rounded-full be text-white flex items-center justify-center font-bold'>#{s.n}</div>
+              <div>
+                <b>{bn ? `শিক্ষার্থী #${s.n}` : `Student #${s.n}`}</b><br />
+                <span className='text-xs text-slate-500'>{s.cls}, {s.d}</span>
+              </div>
+              <span className='ml-auto bg-blue-50 te text-xs font-bold rounded-full px-2 py-0.5'>GPA {s.gpa}</span>
+            </div>
+            <p className='text-sm'><b>{bn ? 'প্রয়োজন:' : 'Needs:'}</b> {s.need}</p>
+            <Bar v={s.got} max={s.amt} color='var(--edu)' />
+            <p className='text-xs text-slate-500'>
+              {bn ? `এই মাসে ${money(s.amt)} এর মধ্যে ${money(s.got)} সংগৃহীত হয়েছে` : `${money(s.got)} of ${money(s.amt)} funded this month`}
+            </p>
+            <button
+              className='btn be mt-auto'
+              onClick={() => {
+                setDpre({ amt: s.amt, note: 'Sponsoring Student #' + s.n + ' (' + s.need + ')' });
+                setModal('donate');
+              }}
+            >
+              {bn ? 'এই শিক্ষার্থীকে স্পনসর করুন' : 'Sponsor This Student'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </Sec>
+  );
+}
+
+function ScholarForm() {
+  const { log, lang } = useT();
+  const bn = lang === 'bn';
+  const [st, setSt] = useState(1);
+  const [done, setDone] = useState('');
+  const [f, setF] = useState({ name: '', age: '', cls: '', dist: '', guardian: '', phone: '', gpa: '', exam: '', rank: '', income: '', members: '', why: '' });
+  const u = k => e => setF({ ...f, [k]: e.target.value });
+  const ok = st === 1 ? f.name && f.cls && f.dist : st === 2 ? f.gpa && f.exam : f.income && f.why;
+  const labels = bn ? ['সাধারণ তথ্য', 'একাডেমিক ফলাফল', 'পারিবারিক প্রয়োজন'] : ['Basic info', 'Academic results', 'Family need'];
+
+  if (done) return (
+    <Sec title={bn ? 'বৃত্তির আবেদন' : 'Scholarship Application'} color='var(--edu)'>
+      <div className='card max-w-lg text-center'>
+        <div className='text-4xl'>🎓</div>
+        <b className='block mt-2'>{bn ? 'আবেদন গৃহীত হয়েছে' : 'Application received'}</b>
+        <p className='text-sm text-slate-600'>
+          {bn
+            ? `রেফারেন্স নম্বর ${done}। একজন স্বেচ্ছাসেবক স্কুলের প্রত্যয়নপত্র ও বাড়ি পরিদর্শনের মাধ্যমে তথ্য যাচাই করবেন।`
+            : `Reference ${done}. A volunteer will verify need and merit with a school letter and home visit.`}
+        </p>
+      </div>
+    </Sec>
+  );
+
+  return (
+    <Sec
+      title={bn ? 'বৃত্তির আবেদন' : 'Scholarship Application'}
+      color='var(--edu)'
+      sub={bn ? 'মাত্র তিনটি সহজ ধাপ। মোবাইল থেকেও সহজে পূরণ করা যায়।' : 'Three short steps. It works well on a phone.'}
+    >
+      <div className='card max-w-lg'>
+        <div className='flex items-center mb-4'>
+          {labels.map((l, i) => (
+            <div key={l} className='flex-1 text-center text-xs'>
+              <div className={'mx-auto w-8 h-8 rounded-full flex items-center justify-center font-bold ' + (st > i + 1 ? 'bg-green-600 text-white' : st === i + 1 ? 'be text-white' : 'bg-slate-200')}>
+                {st > i + 1 ? '✔' : i + 1}
+              </div>
+              {l}
+            </div>
+          ))}
+        </div>
+
+        {st === 1 && <>
+          <Fld l={bn ? 'শিক্ষার্থীর নাম' : 'Student name'}><input className='inp' value={f.name} onChange={u('name')} /></Fld>
+          <div className='grid grid-cols-2 gap-2'>
+            <Fld l={bn ? 'বয়স' : 'Age'}><input className='inp' type='number' value={f.age} onChange={u('age')} /></Fld>
+            <Fld l={bn ? 'শ্রেণি / স্তর' : 'Class / level'}><input className='inp' value={f.cls} onChange={u('cls')} /></Fld>
+          </div>
+          <Fld l={bn ? 'জেলা' : 'District'}>
+            <select className='inp' value={f.dist} onChange={u('dist')}>
+              <option value=''>{bn ? 'নির্বাচন করুন' : 'Select'}</option>
+              {DISTRICTS.map(x => <option key={x}>{x}</option>)}
+            </select>
+          </Fld>
+          <Fld l={bn ? 'অভিভাবকের নাম ও ফোন নম্বর' : 'Guardian name & phone'}><input className='inp' value={f.guardian} onChange={u('guardian')} /></Fld>
+        </>}
+
+        {st === 2 && <>
+          <div className='grid grid-cols-2 gap-2'>
+            <Fld l={bn ? 'সর্বশেষ GPA / নম্বর' : 'Last GPA / marks'}><input className='inp' value={f.gpa} onChange={u('gpa')} /></Fld>
+            <Fld l={bn ? 'পরীক্ষার নাম' : 'Exam'}><input className='inp' placeholder='e.g. JSC, SSC' value={f.exam} onChange={u('exam')} /></Fld>
+          </div>
+          <Fld l={bn ? 'ক্লাস রোল / পুরস্কার (ঐচ্ছিক)' : 'Class rank / awards (optional)'}><input className='inp' value={f.rank} onChange={u('rank')} /></Fld>
+        </>}
+
+        {st === 3 && <>
+          <div className='grid grid-cols-2 gap-2'>
+            <Fld l={bn ? 'মাসিক পারিবারিক আয় (৳)' : 'Monthly family income (৳)'}><input className='inp' type='number' value={f.income} onChange={u('income')} /></Fld>
+            <Fld l={bn ? 'পরিবারের সদস্য সংখ্যা' : 'Family members'}><input className='inp' type='number' value={f.members} onChange={u('members')} /></Fld>
+          </div>
+          <Fld l={bn ? 'কী ধরনের সহায়তা প্রয়োজন এবং কেন?' : 'What support do you need and why?'}><textarea className='inp' rows='3' value={f.why} onChange={u('why')} /></Fld>
+        </>}
+
+        <div className='flex justify-between mt-2'>
+          <button className='btn bg-slate-500' disabled={st === 1} onClick={() => setSt(st - 1)}>{bn ? 'পূর্ববর্তী' : 'Back'}</button>
+          {st < 3
+            ? <button className='btn be' disabled={!ok} onClick={() => setSt(st + 1)}>{bn ? 'পরবর্তী' : 'Next'}</button>
+            : <button className='btn be' disabled={!ok} onClick={() => { setDone('SCH-' + String(Date.now()).slice(-5)); log('Scholarship application: ' + f.name); }}>{bn ? 'আবেদন জমা দিন' : 'Submit application'}</button>}
+        </div>
+      </div>
+    </Sec>
+  );
+}
+
+function Mentor() {
+  const { members, setMembers, log, lang } = useT();
+  const bn = lang === 'bn';
+  const [f, setF] = useState({ name: '', field: '', email: '' });
+  const [ok, setOk] = useState(false);
+  return (
+    <Sec
+      title={bn ? 'মেন্টর হিসেবে যুক্ত হোন' : 'Become a Mentor'}
+      color='var(--edu)'
+      sub={bn ? 'সপ্তাহে মাত্র এক ঘণ্টা একজন শিক্ষার্থীকে দিকনির্দেশনা দিন। বিশ্ববিদ্যালয় শিক্ষার্থী ও পেশাজীবীরা স্বাগতম।' : 'Guide a student for one hour a week. University students and professionals are welcome.'}
+    >
+      <div className='card max-w-lg'>
+        <Fld l={bn ? 'নাম' : 'Name'}><input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /></Fld>
+        <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}><input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} /></Fld>
+        <Fld l={bn ? 'ইমেইল' : 'Email'}><input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></Fld>
+        <button
+          className='btn be'
+          disabled={!f.name}
+          onClick={() => {
+            setMembers([...members, { id: Date.now(), name: f.name, role: 'Volunteer', district: 'Dhaka', phone: '-', bg: '', cat: 'Volunteer', consent: false, approved: false }]);
+            log('Mentor signup: ' + f.name);
+            setOk(true);
+            setF({ name: '', field: '', email: '' });
+          }}
+        >
+          {bn ? 'মেন্টর হিসেবে নিবন্ধন করুন' : 'Sign up as mentor'}
+        </button>
+        {ok && <p className='text-sm text-green-700 mt-2'>{bn ? 'ধন্যবাদ! একজন অ্যাডমিন আপনার মেন্টর প্রোফাইলটি অনুমোদন করবেন।' : 'Thank you! An admin will approve your mentor profile.'}</p>}
+      </div>
+    </Sec>
+  );
+}
+
+function EduPage() {
+  return (<><EduHero /><Students /><EduRules /><ScholarForm /><Mentor /></>);
+}
 
 const PMETA={1:{dur:'02:14',spent:45000,fam:30,rep:'Volunteers handed 120 blankets to 30 families across three villages in Rangpur. Each household signed the handover sheet and a ward member was present.'},2:{dur:'01:48',spent:30000,fam:40,rep:'Books and school bags were given to 40 students at a school ceremony in Dhaka, with the headteacher present.'}};
 const pmeta=p=>({dur:'00:45',rep:'The project team will add the full field report soon.',...(PMETA[p.id]||{})});
