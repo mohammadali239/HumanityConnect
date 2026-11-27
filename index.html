@@ -210,28 +210,27 @@ function EduHero() {
     <div 
       className='text-white relative'
       style={{
-        backgroundImage: `linear-gradient(to right, rgba(0, 20, 50, 0.70), rgba(0, 20, 50, 0.25)), url('edu%20pic.jpg')`,
+        backgroundImage: `linear-gradient(to right, rgba(0, 31, 63, 0.92), rgba(0, 31, 63, 0.55)), url('edu%20pic.jpeg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#0a2540'
+        backgroundRepeat: 'no-repeat'
       }}
     >
       <div className='max-w-6xl mx-auto px-4 py-12 relative z-10'>
-        <p className='text-sm opacity-90 drop-shadow'>
+        <p className='text-sm opacity-80'>
           {bn ? 'মেধাবী শিক্ষার্থীদের জন্য শিক্ষা সহায়তা' : 'Education Support for Meritorious Students'}
         </p>
-        <h2 className='text-3xl md:text-4xl font-extrabold max-w-3xl leading-snug mt-1 drop-shadow-md'>
+        <h2 className='text-3xl md:text-4xl font-extrabold max-w-3xl leading-snug mt-1'>
           {bn ? 'অর্থের অভাবে কোনো মেধাবী শিক্ষার্থীর স্বপ্ন যেন নিভে না যায়।' : 'A bright mind should never be switched off by an empty wallet.'}
         </h2>
-        <p className='mt-3 max-w-2xl opacity-95 drop-shadow'>
+        <p className='mt-3 max-w-2xl opacity-90'>
           {bn
             ? 'কল্পনা করুন এমন একটি মেয়ের কথা, যে মাকে সবজি বিক্রিতে সাহায্য করার পর কেরোসিনের কুপির আলোয় পড়াশোনা করেও জেলায় প্রথম হয়। আপনার সামান্য মাসিক সহায়তা তাকে স্কুলে ধরে রাখতে পারে। নিচের প্রতিটি কার্ডই এমন একজন শিক্ষার্থীর। অপ্রাপ্তবয়স্কদের নিরাপত্তার স্বার্থে নাম গোপন রাখা হয়েছে।'
             : 'Imagine a girl who studies by a kerosene lamp after helping her mother sell vegetables, and still comes first in her district. A small monthly sponsorship keeps her in class. Every card below is a child like her. Names are withheld to protect minors.'}
         </p>
         <div className='grid grid-cols-3 gap-3 mt-6 max-w-xl text-center'>
           {stats.map(([a, b]) => (
-            <div key={b} className='bg-black/45 backdrop-blur-sm rounded-xl py-3 border border-white/15'>
+            <div key={b} className='bg-black/40 backdrop-blur-sm rounded-xl py-3'>
               <div className='text-2xl font-extrabold'>{a}</div>
               <div className='text-xs'>{b} {bn ? '(নমুনা)' : '(sample)'}</div>
             </div>
@@ -239,6 +238,47 @@ function EduHero() {
         </div>
       </div>
     </div>
+  );
+}
+
+function Students() {
+  const { setDpre, setModal, lang } = useT();
+  const bn = lang === 'bn';
+  return (
+    <Sec
+      title={bn ? 'শিক্ষার্থী সহায়তা কার্ড' : 'Student Impact Cards'}
+      color='var(--edu)'
+      sub={bn ? 'সরাসরি একজন শিক্ষার্থীকে স্পনসর করুন। নিরাপত্তার স্বার্থে পরিচয় গোপন রাখা হয়েছে।' : 'Sponsor one student directly. Identities are anonymised.'}
+    >
+      <div className='grid md:grid-cols-3 gap-4'>
+        {STU.map(s => (
+          <div key={s.n} className='card flex flex-col gap-2'>
+            <div className='flex items-center gap-3'>
+              <div className='w-12 h-12 rounded-full be text-white flex items-center justify-center font-bold'>#{s.n}</div>
+              <div>
+                <b>{bn ? `শিক্ষার্থী #${s.n}` : `Student #${s.n}`}</b><br />
+                <span className='text-xs text-slate-500'>{s.cls}, {s.d}</span>
+              </div>
+              <span className='ml-auto bg-blue-50 te text-xs font-bold rounded-full px-2 py-0.5'>GPA {s.gpa}</span>
+            </div>
+            <p className='text-sm'><b>{bn ? 'প্রয়োজন:' : 'Needs:'}</b> {s.need}</p>
+            <Bar v={s.got} max={s.amt} color='var(--edu)' />
+            <p className='text-xs text-slate-500'>
+              {bn ? `এই মাসে ${money(s.amt)} এর মধ্যে ${money(s.got)} সংগৃহীত হয়েছে` : `${money(s.got)} of ${money(s.amt)} funded this month`}
+            </p>
+            <button
+              className='btn be mt-auto'
+              onClick={() => {
+                setDpre({ amt: s.amt, note: 'Sponsoring Student #' + s.n + ' (' + s.need + ')' });
+                setModal('donate');
+              }}
+            >
+              {bn ? 'এই শিক্ষার্থীকে স্পনসর করুন' : 'Sponsor This Student'}
+            </button>
+          </div>
+        ))}
+      </div>
+    </Sec>
   );
 }
 function ScholarForm() {
