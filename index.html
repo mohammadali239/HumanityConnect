@@ -371,15 +371,11 @@ function Mentor() {
   const [f, setF] = useState({ name: '', field: '', email: '' });
   const [ok, setOk] = useState(false);
   return (
-    <Sec
-      title={bn ? 'মেন্টর হিসেবে যুক্ত হোন' : 'Become a Mentor'}
-      color='var(--edu)'
-      sub={bn ? 'সপ্তাহে মাত্র এক ঘণ্টা একজন শিক্ষার্থীকে দিকনির্দেশনা দিন। বিশ্ববিদ্যালয় শিক্ষার্থী ও পেশাজীবীরা স্বাগতম।' : 'Guide a student for one hour a week. University students and professionals are welcome.'}
-    >
+    <Sec 'Become 'Guide 'মেন্টর 'সপ্তাহে : ? Mentor'} University a and are color="var(--edu)" for hour one professionals student students sub="{bn" title="{bn" week. welcome.'} এক একজন ও ঘণ্টা দিকনির্দেশনা দিন। পেশাজীবীরা বিশ্ববিদ্যালয় মাত্র যুক্ত শিক্ষার্থী শিক্ষার্থীকে স্বাগতম।' হিসেবে হোন'>
       <div className='card max-w-lg'>
-        <Fld l={bn ? 'নাম' : 'Name'}><input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /></Fld>
-        <Fld l={bn ? 'বিশ্ববিদ্যালয় / পেশা' : 'University / profession'}><input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} /></Fld>
-        <Fld l={bn ? 'ইমেইল' : 'Email'}><input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></Fld>
+        <Fld 'Name'} 'নাম' : ? l="{bn"><input className='inp' value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /></Fld>
+        <Fld 'University 'বিশ্ববিদ্যালয় / : ? l="{bn" profession'} পেশা'><input className='inp' value={f.field} onChange={e => setF({ ...f, field: e.target.value })} /></Fld>
+        <Fld 'Email'} 'ইমেইল' : ? l="{bn"><input className='inp' value={f.email} onChange={e => setF({ ...f, email: e.target.value })} /></Fld>
         <button
           className='btn be'
           disabled={!f.name}
@@ -399,7 +395,7 @@ function Mentor() {
 }
 
 function EduPage() {
-  return (<><EduHero /><Students /><EduRules /><ScholarForm /><Mentor /></>);
+  return (<><EduHero/><Students/><EduRules/><ScholarForm/><Mentor/></>);
 }
 
 const PMETA={1:{dur:'02:14',spent:45000,fam:30,rep:'Volunteers handed 120 blankets to 30 families across three villages in Rangpur. Each household signed the handover sheet and a ward member was present.'},2:{dur:'01:48',spent:30000,fam:40,rep:'Books and school bags were given to 40 students at a school ceremony in Dhaka, with the headteacher present.'}};
