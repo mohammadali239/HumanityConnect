@@ -1118,13 +1118,13 @@ function QuickContact(){
     {label:bn?'ইমেইল পাঠান':'Send Email',sub:'humanityconnect12@gmail.com',href:'mailto:humanityconnect12@gmail.com',bg:'bg-slate-700',icon:'✉️'}
   ];
   return(
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {open&&(
         <div className="mb-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-          <div className="bp text-white px-4 py-3 flex justify-between items-center">
+          <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
             <div>
               <b className="text-sm block">{bn?'দ্রুত যোগাযোগ করুন':'Quick Contact'}</b>
-              <span className="text-[11px] opacity-80">{bn?'যেকোনো প্রয়োজনে পাশে আছি':'We are here to help you'}</span>
+              <span className="text-[11px] opacity-85">{bn?'যেকোনো প্রয়োজনে পাশে আছি':'We are here to help you'}</span>
             </div>
             <button onClick={()=>setOpen(false)} className="text-lg font-bold px-1 hover:opacity-80">×</button>
           </div>
@@ -1141,9 +1141,18 @@ function QuickContact(){
           </div>
         </div>
       )}
-      <button onClick={()=>setOpen(!open)} className="flex items-center gap-2 px-4 py-3 rounded-full shadow-xl text-white font-bold text-sm transition hover:scale-105" style={{background:'linear-gradient(135deg,#059669,#1E40AF)'}}>
-        <span className="text-lg">{open?'✕':'💬'}</span>
-        <span>{open?(bn?'বন্ধ করুন':'Close'):(bn?'যোগাযোগ':'Contact')}</span>
+      <button
+        onClick={()=>setOpen(!open)}
+        title={bn?'যোগাযোগ করুন':'Quick Contact'}
+        className="relative w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-xl flex items-center justify-center transition hover:scale-105 ring-4 ring-blue-500/30"
+      >
+        {open ? (
+          <span className="text-xl font-bold">✕</span>
+        ) : (
+          <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
+            <path d="M12 1a9 9 0 0 0-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h4v1h-7v2h6c1.66 0 3-1.34 3-3V10a9 9 0 0 0-9-9z"/>
+          </svg>
+        )}
       </button>
     </div>
   );
