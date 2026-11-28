@@ -123,7 +123,7 @@ return(<Ctx.Provider value={ctx}>
 <button className="btn bp" onClick={()=>setModal('reg')}>{t('join')}</button></div></div>
 <nav className="lg:hidden flex gap-2 overflow-x-auto px-4 pb-2 text-xs font-semibold whitespace-nowrap">{nav.map(([k,p])=><button key={k} onClick={()=>go(p)} className={'px-2.5 py-1 rounded-full '+(page===p?'bp text-white':'bg-slate-100 text-slate-600')}>{t(k)}</button>)}</nav></header>
 <Router/>
-<Contact/><Footer/>
+<Contact/><Footer/><QuickContact/>
 {modal==='donate'&&<DonateModal/>}{modal==='reg'&&<RegModal/>}
 </Ctx.Provider>)}
 
@@ -849,6 +849,47 @@ function Contact(){
         </div>
       </div>
     </Sec>
+  );
+}
+function QuickContact(){
+  const[open,setOpen]=useState(false);
+  const{lang}=useT();
+  const bn=lang==='bn';
+  const items=[
+    {label:bn?'হোয়াটসঅ্যাপ চ্যাট':'WhatsApp Chat',sub:'01977-853550',href:'https://wa.me/8801977853550',bg:'bg-emerald-500',icon:'💬'},
+    {label:bn?'ফেসবুক পেজ':'Facebook Page',sub:'Humanity Connect',href:'https://www.facebook.com/share/19oERSrLHM/?mibextid=wwXIfr',bg:'bg-blue-600',icon:'📘'},
+    {label:bn?'সরাসরি কল করুন':'Call Directly',sub:'01977-853550',href:'tel:01977853550',bg:'bg-orange-600',icon:'📞'},
+    {label:bn?'ইমেইল পাঠান':'Send Email',sub:'humanityconnect12@gmail.com',href:'mailto:humanityconnect12@gmail.com',bg:'bg-slate-700',icon:'✉️'}
+  ];
+  return(
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+      {open&&(
+        <div className="mb-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="bp text-white px-4 py-3 flex justify-between items-center">
+            <div>
+              <b className="text-sm block">{bn?'দ্রুত যোগাযোগ করুন':'Quick Contact'}</b>
+              <span className="text-[11px] opacity-80">{bn?'যেকোনো প্রয়োজনে পাশে আছি':'We are here to help you'}</span>
+            </div>
+            <button onClick={()=>setOpen(false)} className="text-lg font-bold px-1 hover:opacity-80">×</button>
+          </div>
+          <div className="p-2.5 space-y-1.5 bg-slate-50">
+            {items.map(x=>(
+              <a key={x.label} href={x.href} target={x.href.startsWith('http')?'_blank':'_self'} rel="noreferrer" className="flex items-center gap-3 p-2 rounded-xl bg-white hover:bg-blue-50 border border-slate-100 shadow-sm transition">
+                <span className={`w-9 h-9 rounded-full ${x.bg} text-white flex items-center justify-center text-base shrink-0`}>{x.icon}</span>
+                <div className="min-w-0">
+                  <b className="text-xs text-slate-900 block truncate">{x.label}</b>
+                  <span className="text-[11px] text-slate-500 block truncate">{x.sub}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      <button onClick={()=>setOpen(!open)} className="flex items-center gap-2 px-4 py-3 rounded-full shadow-xl text-white font-bold text-sm transition hover:scale-105" style={{background:'linear-gradient(135deg,#059669,#1E40AF)'}}>
+        <span className="text-lg">{open?'✕':'💬'}</span>
+        <span>{open?(bn?'বন্ধ করুন':'Close'):(bn?'যোগাযোগ':'Contact')}</span>
+      </button>
+    </div>
   );
 }
 function Footer(){const{go}=useT();return(<footer id="footer" className="bp text-white mt-10"><div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-4 text-sm"><div><b>Humanity Connect</b><p className="text-xs opacity-80 mt-1">Transparent student-led charity connecting verified people in need with donors and volunteers.</p></div><div><b>Quick links</b><button onClick={()=>go('transparency')} className="block text-left">Open Books</button><button onClick={()=>go('campaigns')} className="block text-left">Campaigns</button><button onClick={()=>go('zakat')} className="block text-left">Zakat Fund</button></div><div><b>Trust &amp; Governance</b><button onClick={()=>go('audit')} className="block text-left">Verification Process</button><button onClick={()=>go('tools')} className="block text-left">Safeguarding Guidelines</button><a href="https://www.facebook.com/share/19oERSrLHM/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="block text-left font-semibold underline mt-1">📘 Follow us on Facebook ↗</a></div></div></footer>)}
