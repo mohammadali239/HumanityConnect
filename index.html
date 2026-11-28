@@ -930,88 +930,133 @@ return(<Sec id="directory" title="Member & Donor Directory"><input className="in
 function FAQ(){const[o,setO]=useState(0);const q=[['Is Humanity Connect registered?','Not yet. This is a prototype; legal registration is in progress and real payments are disabled until it is complete.'],['How can I verify where my money went?','Every expense is logged with date, place and receipt, and proof photos or videos are published in the gallery.'],['What is the admin overhead?','In this demo no admin salary is deducted. Any real overhead will be published as its own expense line.'],['Is Zakat kept separate?','Yes. Zakat goes to a separate pool used only for eligible recipients.'],['Who sees my name?','Only you decide. Tick Anonymous when donating or hide your name in your dashboard.']];
 return(<Sec id="faq" title="Public FAQ & Live Audit">{q.map(([a,b],i)=><div key={a} className="card mb-2"><button className="w-full text-left font-semibold flex justify-between" onClick={()=>setO(o===i?-1:i)}>{a}<span>{o===i?'−':'+'}</span></button>{o===i&&<p className="text-sm text-slate-600 mt-2">{b}</p>}</div>)}</Sec>)}
 
-function Team() {
+function TeamModal({ open, onClose }) {
   const { team, lang } = useT();
   const bn = lang === 'bn';
-  const sorted = [...team].sort((a, b) => (a.order || 99) - (b.order || 99));
-  const head = sorted[0];
-  const rest = sorted.slice(1);
+  if (!open) return null;
 
-  const fmtUrl = (u) => !u ? '' : (u.startsWith('http') ? u : 'https://' + u);
-  const fmtWa = (w) => {
-    if (!w) return '';
-    if (w.startsWith('http')) return w;
-    const num = w.replace(/[^0-9]/g, '');
-    return 'https://wa.me/' + (num.startsWith('88') ? num : '88' + num);
-  };
+  const sorted = [...team].sort((a, b) => (a.ord || 99) - (b.ord || 99));
+  const chief = sorted[0];
+  const others = sorted.slice(1);
 
-  const SocialLinks = ({ m }) => (
-    <div className="flex flex-wrap items-center justify-center gap-2 mt-3 pt-2.5 border-t border-slate-100 w-full">
+  const SocialBtns = ({ m }) => (
+    <div className="flex justify-center gap-2.5 mt-4 flex-wrap">
       {m.fb && (
-        <a href={fmtUrl(m.fb)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white text-[11px] font-bold transition">
-          Facebook
+        <a href={m.fb} target="_blank" rel="noreferrer" title="Facebook" className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 hover:bg-amber-400 hover:text-slate-950 flex items-center justify-center font-bold text-sm transition">
+          f
         </a>
       )}
       {m.wa && (
-        <a href={fmtWa(m.wa)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white text-[11px] font-bold transition">
-          WhatsApp
+        <a href={`https://wa.me/${m.wa.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" title="WhatsApp" className="w-9 h-9 rounded-full bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 hover:bg-emerald-400 hover:text-slate-950 flex items-center justify-center text-sm transition">
+          💬
         </a>
       )}
       {m.link && (
-        <a href={fmtUrl(m.link)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white text-[11px] font-bold transition">
-          {bn ? 'প্রোফাইল' : 'Profile'} ↗
+        <a href={m.link} target="_blank" rel="noreferrer" title="Portfolio / Profile" className="px-3.5 h-9 rounded-full bg-amber-400 text-slate-950 hover:bg-amber-300 flex items-center justify-center font-extrabold text-xs transition shadow">
+          {bn ? 'পোর্টফোলিও ↗' : 'Portfolio ↗'}
         </a>
       )}
     </div>
   );
 
   return (
-    <Sec
-      id="team"
-      title={bn ? 'পরিচালনা পর্ষদ ও নেতৃত্ব' : 'Board of Directors & Leadership'}
-      sub={bn ? 'মানবিক সেবা ও স্বচ্ছতা নিশ্চিত করতে যারা নিরলসভাবে কাজ করে যাচ্ছেন।' : 'The executive committee leading Humanity Connect with transparency and dedication.'}
-    >
-      {head && (
-        <div className="max-w-md mx-auto mb-8">
-          <div className="card relative overflow-hidden text-center border-2 border-blue-200 bg-gradient-to-b from-blue-50/70 to-white shadow-md p-6 flex flex-col items-center">
-            <span className="inline-block bg-blue-800 text-white text-[11px] font-bold tracking-wider uppercase px-3 py-0.5 rounded-full mb-3">
-              {bn ? 'প্রধান নির্বাহী' : 'Chief Executive'}
-            </span>
-            {head.photo ? (
-              <img src={head.photo} alt={head.name} className="w-28 h-28 rounded-full mx-auto mb-3 object-cover border-4 border-white shadow-md" />
-            ) : (
-              <div className="w-28 h-28 rounded-full mx-auto mb-3 bp text-white flex items-center justify-center font-extrabold text-3xl border-4 border-white shadow-md">
-                {head.name[0]}
-              </div>
-            )}
-            <h3 className="font-extrabold text-lg text-slate-900">{head.name}</h3>
-            <div className="text-xs font-bold tp uppercase tracking-wide mt-0.5">{head.role}</div>
-            {head.bio && <p className="text-xs text-slate-600 mt-2 italic">“{head.bio}”</p>}
-            {(head.fb || head.wa || head.link) && <SocialLinks m={head} />}
-          </div>
-        </div>
-      )}
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-gradient-to-b from-[#0b132b] via-[#1c2541] to-[#0b132b] text-white p-4 sm:p-8">
+      {/* উপরে ডানপাশে ক্লোজ বাটন */}
+      <button
+        onClick={onClose}
+        className="fixed top-5 right-5 z-50 w-11 h-11 rounded-full bg-white/10 hover:bg-amber-400 hover:text-slate-950 border border-white/20 text-amber-300 text-2xl font-bold flex items-center justify-center transition shadow-lg"
+        title={bn ? 'বন্ধ করুন' : 'Close'}
+      >
+        ×
+      </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {rest.map((m, idx) => (
-          <div key={m.id} className="card text-center hover:shadow-md transition-shadow flex flex-col items-center p-5 border-t-4" style={{ borderTopColor: idx % 2 === 0 ? 'var(--primary)' : 'var(--cta)' }}>
-            {m.photo ? (
-              <img src={m.photo} alt={m.name} className="w-24 h-24 rounded-full mb-3 object-cover border-2 border-blue-100 shadow-sm" />
-            ) : (
-              <div className="w-24 h-24 rounded-full mb-3 bg-blue-100 tp flex items-center justify-center font-extrabold text-2xl border-2 border-blue-200">
-                {m.name[0]}
-              </div>
+      <div className="max-w-5xl mx-auto pt-6 pb-12 text-center">
+        <div className="inline-flex items-center gap-2 text-amber-400 text-2xl sm:text-4xl font-extrabold tracking-tight">
+          <span>🏛️</span>
+          <span>Humanity Connect</span>
+        </div>
+        <p className="text-slate-300 text-sm sm:text-base mt-2">
+          {bn ? 'পরিচালকবৃন্দ — মানবতার সেবায় নিবেদিত প্রাণ' : 'Board of Directors — Dedicated to Serving Humanity'}
+        </p>
+
+        {/* প্রধান নির্বাহী (CEO) কার্ড */}
+        {chief && (
+          <div className="max-w-xl mx-auto mt-8 rounded-3xl p-6 sm:p-8 bg-white/5 border-2 border-amber-400/60 shadow-2xl backdrop-blur-sm">
+            <img
+              src={chief.photo || 'Mohammad Ali.jpg'}
+              alt={chief.name}
+              className="w-28 h-28 rounded-full object-cover mx-auto border-4 border-amber-400 shadow-lg"
+            />
+            <h3 className="text-2xl font-extrabold text-amber-400 mt-4">{chief.name}</h3>
+            <span className="inline-block mt-2 px-4 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-200 text-xs font-bold">
+              {chief.role}
+            </span>
+            {chief.bio && (
+              <p className="text-sm text-slate-200 mt-4 leading-relaxed">{chief.bio}</p>
             )}
-            <div className="font-extrabold text-base text-slate-900">{m.name}</div>
-            <div className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full mt-1">{m.role}</div>
-            {m.bio && <p className="text-xs text-slate-500 mt-2">{m.bio}</p>}
-            <div className="mt-auto w-full">
-              {(m.fb || m.wa || m.link) && <SocialLinks m={m} />}
-            </div>
+            <SocialBtns m={chief} />
           </div>
-        ))}
+        )}
+
+        {/* অন্যান্য পরিচালক ও উপদেষ্টা পরিষদ */}
+        {others.length > 0 && (
+          <>
+            <div className="mt-10 mb-6">
+              <span className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/10 border border-amber-400/40 text-amber-300 font-bold text-sm shadow">
+                <span>👑</span>
+                <span>{bn ? 'পরিচালনা ও উপদেষ্টা পরিষদ' : 'Board & Advisory Committee'}</span>
+              </span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {others.map(m => (
+                <div key={m.id} className="rounded-2xl p-6 bg-white/5 border border-white/15 hover:border-amber-400/50 transition text-center flex flex-col items-center">
+                  <img
+                    src={m.photo || 'Logo.png'}
+                    alt={m.name}
+                    className="w-22 h-22 rounded-full object-cover border-2 border-amber-400/80 shadow"
+                    style={{ width: '88px', height: '88px' }}
+                  />
+                  <b className="text-lg text-amber-300 mt-3">{m.name}</b>
+                  <span className="mt-1 px-3 py-0.5 rounded-full bg-white/10 text-slate-200 text-xs font-semibold">
+                    {m.role}
+                  </span>
+                  {m.bio && (
+                    <p className="text-xs text-slate-300 mt-3 leading-relaxed line-clamp-3">{m.bio}</p>
+                  )}
+                  <div className="mt-auto pt-2">
+                    <SocialBtns m={m} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-    </Sec>
+    </div>
+  );
+}
+
+function Team() {
+  const [open, setOpen] = useState(false);
+  const { lang } = useT();
+  const bn = lang === 'bn';
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8 text-center">
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-extrabold text-base sm:text-lg shadow-xl hover:scale-105 transition"
+        style={{ background: 'linear-gradient(135deg, #4f46e5, #059669)' }}
+      >
+        <span className="text-2xl">👥</span>
+        <span>{bn ? 'পরিচালকবৃন্দ (Board of Directors)' : 'Board of Directors & Leadership'}</span>
+      </button>
+      <p className="text-xs text-slate-500 mt-2">
+        {bn ? 'আমাদের প্রতিষ্ঠাতা ও পরিচালনা পর্ষদের বিস্তারিত দেখতে ক্লিক করুন' : 'Click to view our Founder, CEO & Board Members'}
+      </p>
+      <TeamModal open={open} onClose={() => setOpen(false)} />
+    </div>
   );
 }
 function Contact(){
