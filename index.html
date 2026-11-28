@@ -675,10 +675,221 @@ return(<Sec id="education" title="Education Support for Meritorious Students" co
 <button className="btn be" disabled={!mf.name} onClick={()=>{setMembers([...members,{id:Date.now(),name:mf.name,role:'Volunteer',district:'Dhaka',phone:'-',bg:'',cat:'Volunteer',consent:false}]);setMok('Thank you! You are signed up as a mentor.');log('Mentor signup: '+mf.name);setMf({name:'',field:'',email:''})}}>Sign up</button>{mok&&<p className="text-sm text-green-700 mt-2">{mok}</p>}
 <div className="mt-4 bg-blue-50 rounded p-3 text-sm"><b>Student story (anonymised)</b><p className="text-slate-600">A Class 9 student from a northern district kept first position while helping at a tea stall. With books and tuition support she now leads her school’s science club. Name, photo and school withheld to protect minors.</p></div></div></div></Sec>)}
 
-function Feed(){const{donations}=useT();const top={};donations.filter(d=>d.ok&&!d.anon).forEach(d=>top[d.name]=(top[d.name]||0)+d.amt);const lb=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
-return(<Sec title="Recent Donations & Leaderboard" sub="Donors choose to show their name or stay anonymous. Only opted-in donors appear on the leaderboard."><div className="grid md:grid-cols-2 gap-4"><div className="card space-y-2">{donations.slice(0,8).map(d=><div key={d.id} className="flex justify-between text-sm border-b pb-1"><span>{d.anon?'Anonymous':d.name} <span className="text-xs text-slate-400">{d.t} · {d.fund}{!d.ok&&' · pending'}</span></span><b>{money(d.amt)}</b></div>)}</div>
-<div className="card"><b className="tp">Opt-in leaderboard</b>{lb.map(([n,v],i)=><div key={n} className="flex justify-between text-sm mt-2"><span>{i+1}. {n}</span><b>{money(v)}</b></div>)}</div></div></Sec>)}
+function Feed() {
+  const { donations, lang } = useT();
+  const bn = lang === 'bn';
+  const [filter, setFilter] = useState('All');
+  const [clock, setClock] = useState(() => new Date().toLocaleTimeString());
 
+  useEffect(() => {
+    const id = setInterval(() => setClock(new Date().toLocaleTimeString()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const top = {};
+  const counts = {};
+  const lastFund = {};
+
+  donations
+    .filter(d => d.ok && !d.anon && d.name && d.name !== 'Anonymous')
+    .forEach(d => {
+      const key = d.name.trim();
+      top[key] = (top[key] || 0) + Number(d.amt || 0);
+      counts[key] = (counts[key] || 0) + 1;
+      if (!lastFund[key]) lastFund[key] = d.fund;
+    });
+
+  const lb = Object.entries(top).sort((a, b) => b[1] - a[1]).slice(0, 7);
+  const podium = lb.slice(0, 3);
+  const runners = lb.slice(3);
+  const maxAmt = lb.length ? lb[0][1] : 1;
+
+  const feedList = donations
+    .filter(d => filter === 'All' || d.fund === filter)
+    .slice(0, 8);
+
+  const totalLive = donations.filter(d => d.ok).reduce((s, d) => s + Number(d.amt || 0), 0);
+
+  return (
+    <Sec
+      title={
+        <div className="flex flex-wrap items-center justify-between gap-3 w-full">
+          <span className="inline-flex items-center gap-2.5 flex-wrap">
+            <span>{bn ? 'লাইভ অনুদান ও শীর্ষ দাতা লিডারবোর্ড' : 'Live Donations & Top Donors'}</span>
+            <span className="inline-flex items-center gap-1.5 bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-xs font-extrabold px-3 py-1 rounded-full shadow-sm">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              LIVE · {clock}
+            </span>
+          </span>
+        </div>
+      }
+      sub={
+        bn
+          ? 'Firebase রিয়েল-টাইম ডাটাবেজের সাথে সরাসরি যুক্ত—প্রতিটি অনুদান যাচাই হওয়ার সাথে সাথেই র‍্যাংকিং ও হিসাব স্বয়ংক্রিয়ভাবে আপডেট হয়।'
+          : 'Synced directly with Firebase real-time ledger — rankings and totals update the instant a donation is verified.'
+      }
+    >
+      <div className="rounded-2xl p-4 mb-5 text-white shadow-lg flex flex-wrap items-center justify-between gap-4" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0f172a 100%)' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-2xl">⚡</div>
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-blue-200 font-bold">
+              {bn ? 'রিয়েল-টাইম ট্র্যাকার সক্রিয়' : 'Real-Time Ledger Active'}
+            </div>
+            <div className="text-sm font-semibold text-white/90">
+              {bn ? `মোট যাচাইকৃত রেকর্ড: ${donations.filter(d => d.ok).length}টি` : `${donations.filter(d => d.ok).length} Verified Entries Tracked`}
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-6 text-right">
+          <div>
+            <div className="text-[11px] text-blue-200">{bn ? 'সাম্প্রতিক যাচাইকৃত জমা' : 'Recent Verified Volume'}</div>
+            <div className="text-xl font-extrabold text-amber-300">{money(totalLive)}</div>
+          </div>
+          <div>
+            <div className="text-[11px] text-blue-200">{bn ? 'শীর্ষ দাতা' : 'Top Contributor'}</div>
+            <div className="text-base font-extrabold text-emerald-300">{lb[0] ? lb[0][0] : '—'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-12 gap-5 items-start">
+        <div className="lg:col-span-5 card !p-0 overflow-hidden shadow-md border-slate-200">
+          <div className="bg-slate-900 text-white px-4 py-3 flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <b className="text-sm tracking-wide">{bn ? 'লাইভ অনুদান প্রবাহ' : 'Live Donation Stream'}</b>
+            </div>
+            <div className="flex gap-1 text-[11px]">
+              {['All', 'General', 'Zakat'].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={'px-2 py-0.5 rounded-full font-bold transition ' + (filter === f ? 'bg-amber-400 text-slate-950' : 'bg-white/10 text-slate-300 hover:bg-white/20')}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="divide-y divide-slate-100 max-h-[470px] overflow-y-auto">
+            {feedList.map((d, idx) => (
+              <div key={d.id} className={'p-3.5 flex items-center justify-between gap-3 transition hover:bg-blue-50/40 ' + (idx === 0 ? 'bg-emerald-50/40' : '')}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={'w-10 h-10 rounded-full font-extrabold text-sm flex items-center justify-center shrink-0 ' + (d.anon ? 'bg-slate-200 text-slate-600' : 'bp text-white shadow-sm')}>
+                    {d.anon ? '?' : d.name[0].toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <b className="text-sm text-slate-900 truncate">{d.anon ? (bn ? 'গোপন দাতা' : 'Anonymous Donor') : d.name}</b>
+                      {idx === 0 && (
+                        <span className="bg-emerald-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded uppercase tracking-wider">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
+                      <span>{d.t}</span>
+                      <span>•</span>
+                      <span className={'font-bold ' + (d.fund === 'Zakat' ? 'text-purple-700' : 'text-blue-700')}>{d.fund}</span>
+                      {d.ok ? (
+                        <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 rounded text-[10px] font-bold">✔ Verified</span>
+                      ) : (
+                        <span className="text-amber-700 bg-amber-50 border border-amber-200 px-1.5 rounded text-[10px] font-bold">⏳ Pending</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-extrabold text-base tp">{money(d.amt)}</div>
+                  <div className="text-[10px] text-slate-400 font-mono">{d.id}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:col-span-7 card !p-5 shadow-md border-blue-200 bg-gradient-to-b from-blue-50/60 via-white to-slate-50/40">
+          <div className="flex justify-between items-center pb-3 mb-4 border-b border-blue-100">
+            <div>
+              <b className="text-lg tp flex items-center gap-2">🏆 {bn ? 'সম্মানিত শীর্ষ দাতা প্যানেল' : 'Hall of Generosity'}</b>
+              <span className="text-xs text-slate-500">{bn ? 'সর্বোচ্চ যাচাইকৃত অনুদানদাতাদের রিয়েল-টাইম তালিকা' : 'Ranked automatically by total verified contribution'}</span>
+            </div>
+            <span className="text-xs font-extrabold text-amber-800 bg-amber-100 border border-amber-300 px-3 py-1 rounded-full">
+              TOP {lb.length}
+            </span>
+          </div>
+
+          {lb.length ? (
+            <>
+              <div className="grid sm:grid-cols-3 gap-3 mb-4">
+                {podium.map(([n, v], i) => {
+                  const styles = [
+                    { ring: 'border-amber-400 bg-gradient-to-b from-amber-50 to-white shadow-md', badge: 'bg-amber-500 text-white', icon: '👑 #1' },
+                    { ring: 'border-slate-300 bg-gradient-to-b from-slate-100/80 to-white', badge: 'bg-slate-600 text-white', icon: '🥈 #2' },
+                    { ring: 'border-orange-300 bg-gradient-to-b from-orange-50/80 to-white', badge: 'bg-orange-600 text-white', icon: '🥉 #3' }
+                  ][i];
+                  return (
+                    <div key={n} className={`rounded-2xl border-2 p-3.5 text-center relative flex flex-col items-center ${styles.ring}`}>
+                      <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full mb-2 ${styles.badge}`}>
+                        {styles.icon}
+                      </span>
+                      <div className="w-12 h-12 rounded-full bp text-white font-extrabold text-lg flex items-center justify-center shadow mb-1.5">
+                        {n[0].toUpperCase()}
+                      </div>
+                      <b className="text-sm text-slate-900 line-clamp-1">{n}</b>
+                      <span className="text-[11px] text-slate-500 mb-1.5">
+                        {counts[n]} {bn ? 'টি অনুদান' : (counts[n] > 1 ? 'donations' : 'donation')}
+                      </span>
+                      <div className="mt-auto pt-1.5 border-t border-slate-100 w-full font-extrabold text-base tp">
+                        {money(v)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {runners.length > 0 && (
+                <div className="space-y-2.5">
+                  {runners.map(([n, v], idx) => {
+                    const rank = idx + 4;
+                    return (
+                      <div key={n} className="bg-white rounded-xl p-3 border border-slate-200/80 shadow-sm">
+                        <div className="flex justify-between items-center text-sm mb-1.5">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-extrabold text-xs flex items-center justify-center shrink-0">
+                              #{rank}
+                            </span>
+                            <div className="truncate">
+                              <b className="text-slate-900 block truncate">{n}</b>
+                              <span className="text-[11px] text-slate-500">
+                                {counts[n]} {bn ? 'বার দান' : (counts[n] > 1 ? 'donations' : 'donation')} · {lastFund[n]}
+                              </span>
+                            </div>
+                          </div>
+                          <b className="tp text-base shrink-0">{money(v)}</b>
+                        </div>
+                        <Bar v={v} max={maxAmt} color="var(--primary)" />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-slate-500 py-8 text-center">
+              {bn ? 'এখনো কোনো যাচাইকৃত দাতা তালিকাভুক্ত হননি।' : 'No verified public donors yet.'}
+            </p>
+          )}
+        </div>
+      </div>
+    </Sec>
+  );
+}
 function Gallery(){const{proofs}=useT();return(<Sec id="gallery" title="Proof of Donation Gallery" sub="Photos and videos of how funds were used. Everyone shown has given consent; faces of minors are never published.">
 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">{proofs.map(p=><div key={p.id} className="card"><div className="h-36 rounded bg-slate-200 mb-2 overflow-hidden flex items-center justify-center text-slate-500 text-sm">{p.src?(p.kind==='video'?<video src={p.src} controls className="h-full w-full object-cover"/>:<img src={p.src} className="h-full w-full object-cover" alt={p.title}/>):(p.kind==='video'?'▶ Sample video':'📷 Sample photo')}</div><b className="text-sm">{p.title}</b><p className="text-xs text-slate-600">{p.cost}</p><p className="text-xs">📍 {p.loc} <span className="bg-green-100 text-green-800 rounded px-1.5 ml-1">Consent ✔</span></p></div>)}</div></Sec>)}
 
